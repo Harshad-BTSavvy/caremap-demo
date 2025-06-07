@@ -1,6 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite";
 import { BaseModel } from "../BaseModel";
-import { Patient, tables } from "../migrations/v1/schema_v1";
+import { Patient, tables } from "../migrations/v2/schema_v2";
 
 export class PatientModel extends BaseModel<Patient> {
 

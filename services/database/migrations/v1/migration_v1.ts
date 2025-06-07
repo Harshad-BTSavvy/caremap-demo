@@ -24,3 +24,12 @@ export const up = async (db: SQLiteDatabase) => {
 
   console.log(`Tables created.`);
 };
+
+export const down = async (db: SQLiteDatabase) => {
+  await db.execAsync(`
+    DROP TABLE IF EXISTS patients;
+    DROP TABLE IF EXISTS users;
+  `);
+
+  console.log('V1 migration reverted successfully');
+};

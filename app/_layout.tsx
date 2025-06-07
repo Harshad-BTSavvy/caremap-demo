@@ -13,6 +13,7 @@ const RootLayout = () => {
       onInit={async (db) => {
         const { runMigrations } = useDatabase(db);
         await runMigrations();
+        
         console.log(`Migration completed.`);
       }}
     >
