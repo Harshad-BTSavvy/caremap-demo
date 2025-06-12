@@ -1,28 +1,23 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { Divider } from "@/components/ui/divider";
-import { Patient, User } from "@/services/database/migrations/v1/schema_v1";
-import { Box } from "@/components/ui/box";
-import { Route, router } from "expo-router";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ROUTES } from "@/utils/route";
 import { Badge, BadgeText } from "@/components/ui/badge";
-import { Icon, EditIcon, ShareIcon } from "@/components/ui/icon";
-import { Camera } from "lucide-react-native";
-import { useContext, useEffect, useState } from "react";
+import { Box } from "@/components/ui/box";
+import { Divider } from "@/components/ui/divider";
+import { EditIcon, Icon, ShareIcon } from "@/components/ui/icon";
+import { PatientContext } from "@/context/PatientContext";
+import { UserContext } from "@/context/UserContext";
 import {
   initializeMockSession,
   initializeSession,
-  isAndroid,
-  signOut,
+  isAndroid
 } from "@/services/auth-service/google-auth";
-import { useSQLiteContext } from "expo-sqlite";
-import { UserModel } from "@/services/database/models/UserModel";
-import { PatientModel } from "@/services/database/models/PatientModel";
 import { logger } from "@/services/logging/logger";
-import { GlobalContext, GlobalProvider } from "@/context/GlobalContext";
-import { UserContext } from "@/context/UserContext";
-import { PatientContext } from "@/context/PatientContext";
+import { ROUTES } from "@/utils/route";
+import { Route, router } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { Camera } from "lucide-react-native";
+import { useContext, useEffect, useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HealthProfile() {
 const{user, setUserData }= useContext(UserContext)
