@@ -1,5 +1,4 @@
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { GlobalProvider } from "@/context/GlobalContext";
 import { PatientProvider } from "@/context/PatientContext";
 import { UserProvider } from "@/context/UserContext";
 import "@/global.css";
