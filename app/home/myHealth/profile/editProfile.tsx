@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -16,31 +16,56 @@ import {
   SelectDragIndicatorWrapper,
   SelectItem,
 } from "@/components/ui/select";
-import {
-  initializeSession,
-  signOut,
-} from "@/services/auth-service/google-auth";
-import { Patient, User } from "@/services/database/migrations/v1/schema_v1";
+
+import { Patient } from "@/services/database/migrations/v1/schema_v1";
 import { useSQLiteContext } from "expo-sqlite";
 import { PatientModel } from "@/services/database/models/PatientModel";
 import { useRouter } from "expo-router";
 import { ROUTES } from "@/utils/route";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format, differenceInYears } from "date-fns";
+import { UserContext} from "@/context/UserContext";
+import { PatientContext } from "@/context/PatientContext";
 
 export default function EditProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const{user, setUserData }= useContext(UserContext)
+  const { patient, setPatientData } = useContext(PatientContext)
+  
   const [newPatient, setNewPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const db = useSQLiteContext();
   const patientModel = new PatientModel(db);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
+  
+   // setUserData on mount
+  useEffect(() => {
+    const init = async () => {
+      await setUserData();
+    };
+    init();
+  }, []);
 
-  const calculateAge = (birthdate: string | null | undefined): number | null => {
+  //  setPatientData after user is set
+  useEffect(() => {
+    if (user) {
+      setPatientData(user.id);
+    }
+  }, [user]);
+
+  //  once both user and patient are available, update local state
+  useEffect(() => {
+    if (user && patient) {
+      setNewPatient(patient);
+      setLoading(false);
+    }
+  }, [user, patient]);
+
+// Function to calculate age from birthdate
+  const calculateAge = (
+    birthdate: string | null | undefined
+  ): number | null => {
     if (!birthdate) return null;
     try {
       const birthDate = new Date(birthdate);
@@ -51,61 +76,27 @@ export default function EditProfilePage() {
       return null;
     }
   };
-
+  // Function to handle date selection
   const handleConfirm = (date: Date) => {
     const formatted = format(date, "yyyy-MM-dd");
     const age = calculateAge(formatted);
-    
-    setNewPatient((prev) => 
-      prev ? { 
-        ...prev, 
-        birthdate: formatted,
-        age: age !== null ? age : prev.age
-      } : prev
+
+    setNewPatient((prev) =>
+      prev
+        ? {
+            ...prev,
+            birthdate: formatted,
+            age: age !== null ? age : prev.age,
+          }
+        : prev
     );
     setDatePickerVisibility(false);
   };
 
-
-  useEffect(() => {
-    initializeSession(setUser).finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      handlePatientData(user.id);
-    }
-  }, [user]);
-
-  const handlePatientData = async (userId: string) => {
-    try {
-      const patientData = await patientModel.getPatientByUserId(userId);
-      if (patientData) {
-        setPatient(patientData);
-        setNewPatient(patientData);
-      } else {
-        await patientModel.insert({
-          user_id: userId,
-          name: user?.name || "",
-        });
-        const newPatientData = await patientModel.getPatientByUserId(userId);
-        setPatient(newPatientData);
-        setNewPatient(newPatientData);
-      }
-    } catch (err) {
-      console.log("Patient Error: ", err);
-    }
-  };
-  // const isValidDate = (dateStr: string) => {
-  //   return /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
-  // };
-
+  
   const handleSave = async () => {
     if (!user) return;
-    // if (!isValidDate(newPatient?.birthdate ?? "")) {
-    //   alert("Please enter a valid date in YYYY-MM-DD format");
-    //   return;
-    // }
+
     try {
       await patientModel.updateByFields(
         {
@@ -118,9 +109,7 @@ export default function EditProfilePage() {
         { user_id: user.id }
       );
 
-      const updatedPatient = await patientModel.getPatientByUserId(user.id);
-      setPatient(updatedPatient);
-
+      await patientModel.getPatientByUserId(user.id);
       console.log("Profile updated");
 
       router.replace(ROUTES.MY_HEALTH);
@@ -136,6 +125,17 @@ export default function EditProfilePage() {
       </SafeAreaView>
     );
   }
+  function LabeledDisplayField({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="mb-4">
+      <Text className="text-gray-500 text-sm mb-1">{label}</Text>
+      <View className="border border-gray-300 rounded-lg p-3 bg-gray-100">
+        <Text className="text-gray-700">{value}</Text>
+      </View>
+    </View>
+  );
+}
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -162,14 +162,7 @@ export default function EditProfilePage() {
       </View>
       {/* edit profile form -newPatient*/}
       <View className="p-4">
-        <View className="mb-4">
-          <Text className="text-gray-500 text-sm mb-1">Name</Text>
-          <View className="border border-gray-300 rounded-lg p-3 bg-gray-100">
-            <Text className="text-gray-700">
-              {newPatient?.name ?? user.name}
-            </Text>
-          </View>
-        </View>
+        <LabeledDisplayField label="Name" value={newPatient?.name ?? user.name} />
 
         <View className="mb-4">
           <Text className="text-gray-500 text-sm mb-1">Birthdate</Text>
@@ -178,12 +171,14 @@ export default function EditProfilePage() {
             onPress={() => setDatePickerVisibility(true)}
           >
             <Text className="text-gray-700">
-              {newPatient?.birthdate ? format(new Date(newPatient.birthdate), "yyyy-MM-dd") : "Select birthdate"}
+              {newPatient?.birthdate
+                ? format(new Date(newPatient.birthdate), "yyyy-MM-dd")
+                : "Select birthdate"}
             </Text>
-             <Icon
-          as={CalendarDaysIcon}
-          className="text-typography-500 m-2 w-4 h-4"
-        />
+            <Icon
+              as={CalendarDaysIcon}
+              className="text-typography-500 m-2 w-4 h-4"
+            />
           </TouchableOpacity>
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
@@ -194,16 +189,12 @@ export default function EditProfilePage() {
           />
         </View>
 
-         <View className="mb-4">
-          <Text className="text-gray-500 text-sm mb-1">Age</Text>
-          <View className="border border-gray-300 rounded-lg p-3 bg-gray-100">
-            <Text className="text-gray-700">
-              {newPatient?.age ? `${newPatient.age} years` : "Not specified"}
-            </Text>
-          </View>
-        </View>
-
-        
+        <LabeledDisplayField
+  label="Age"
+  value={
+    newPatient?.age ? `${newPatient.age} years` : "Not specified"
+  }
+/>
 
         <View className="mb-4">
           <Text className="text-gray-500 text-sm mb-1">Weight (in Kg)</Text>
@@ -302,8 +293,3 @@ export default function EditProfilePage() {
     </SafeAreaView>
   );
 }
-
-
-
-
-
