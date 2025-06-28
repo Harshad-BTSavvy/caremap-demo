@@ -81,8 +81,12 @@ export const getPatientSnapshot = async (patientId: number): Promise<PatientSnap
 }
 
 export const updatePatientSnapshot = async (snapshot: Partial<PatientSnapshot>, snapshotUpdate: Partial<PatientSnapshot>): Promise<PatientSnapshot> => {
-    return useModel(snapshotModel, async (model) => {        
-        const updatedSnapshot = await model.updateByFields(snapshot, snapshotUpdate);
+    return useModel(snapshotModel, async (model) => {
+        const updateData = {
+            ...snapshot,
+            updated_at: new Date().toISOString()
+        };
+        const updatedSnapshot = await model.updateByFields(updateData, snapshotUpdate);
         logger.debug("Updated DB Patient Snapshot data: ", updatedSnapshot);
         return updatedSnapshot!;
     });
@@ -91,10 +95,22 @@ export const updatePatientSnapshot = async (snapshot: Partial<PatientSnapshot>, 
 // MedicalCondition Methods (CRUD)
 export const createMedicalCondition = async (condition: Partial<MedicalCondition>): Promise<MedicalCondition> => {
     return useModel(medicalConditionModel, async (model) => {
-        await model.insert(condition);
-        const newCondition = await model.getFirstByFields(condition);
-        logger.debug("Medical Condition created: ", newCondition);
-        return newCondition!;
+        const now = new Date().toISOString();
+        const newCondition = {
+            ...condition,
+            diagnosed_at: condition.diagnosed_at || now,
+            created_at: now,
+            updated_at: now,
+            linked_health_system: condition.linked_health_system || false
+        };
+        await model.insert(newCondition);
+        const created = await model.getFirstByFields({ 
+            patient_id: condition.patient_id,
+            condition_name: condition.condition_name,
+            created_at: now 
+        });
+        logger.debug("Medical Condition created: ", created);
+        return created!;
     });
 }
 
@@ -116,7 +132,11 @@ export const getMedicalConditionsByPatient = async (patientId: number): Promise<
 
 export const updateMedicalCondition = async (condition: Partial<MedicalCondition>, conditionUpdate: Partial<MedicalCondition>): Promise<MedicalCondition> => {
     return useModel(medicalConditionModel, async (model) => {
-        const updatedCondition = await model.updateByFields(condition, conditionUpdate);
+        const updateData = {
+            ...condition,
+            updated_at: new Date().toISOString()
+        };
+        const updatedCondition = await model.updateByFields(updateData, conditionUpdate);
         logger.debug("Updated Medical Condition: ", updatedCondition);
         return updatedCondition!;
     });
@@ -132,10 +152,21 @@ export const deleteMedicalCondition = async (id: number): Promise<void> => {
 // MedicalEquipment Methods (CRUD)
 export const createMedicalEquipment = async (equipment: Partial<MedicalEquipment>): Promise<MedicalEquipment> => {
     return useModel(medicalEquipmentModel, async (model) => {
-        await model.insert(equipment);
-        const newEquipment = await model.getFirstByFields(equipment);
-        logger.debug("Medical Equipment created: ", newEquipment);
-        return newEquipment!;
+        const now = new Date().toISOString();
+        const newEquipment = {
+            ...equipment,
+            created_at: now,
+            updated_at: now,
+            linked_health_system: equipment.linked_health_system || false
+        };
+        await model.insert(newEquipment);
+        const created = await model.getFirstByFields({ 
+            patient_id: equipment.patient_id,
+            equipment_name: equipment.equipment_name,
+            created_at: now 
+        });
+        logger.debug("Medical Equipment created: ", created);
+        return created!;
     });
 }
 
@@ -157,7 +188,11 @@ export const getMedicalEquipmentByPatient = async (patientId: number): Promise<M
 
 export const updateMedicalEquipment = async (equipment: Partial<MedicalEquipment>, equipmentUpdate: Partial<MedicalEquipment>): Promise<MedicalEquipment> => {
     return useModel(medicalEquipmentModel, async (model) => {
-        const updatedEquipment = await model.updateByFields(equipment, equipmentUpdate);
+        const updateData = {
+            ...equipment,
+            updated_at: new Date().toISOString()
+        };
+        const updatedEquipment = await model.updateByFields(updateData, equipmentUpdate);
         logger.debug("Updated Medical Equipment: ", updatedEquipment);
         return updatedEquipment!;
     });
