@@ -241,6 +241,7 @@ await deleteMedicalCondition(1);
 // No response body (void)
 ```
 
+
 ## Medical Equipment Methods
 
 ### Create Medical Equipment
