@@ -115,6 +115,7 @@ export const createPatientSnapshot = async (snapshot: Partial<PatientSnapshot>):
             return existingSnapshot;
         }
 
+        const now = new Date().toISOString();
         const newSnapshot = {
             ...snapshot,
             created_at: new Date(),
@@ -161,7 +162,7 @@ export const createMedicalCondition = async (condition: Partial<MedicalCondition
             return null;
         }
 
-        const now = new Date();
+        const now = new Date().toISOString();
         const newCondition = {
             ...condition,
             diagnosed_at: condition.diagnosed_at || now,
@@ -232,7 +233,7 @@ export const createMedicalEquipment = async (equipment: Partial<MedicalEquipment
             return null;
         }
 
-        const now = new Date();
+        const now = new Date().toISOString();
         const newEquipment = {
             ...equipment,
             created_at: now,
