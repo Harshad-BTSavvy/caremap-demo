@@ -5,16 +5,60 @@ export interface User {
   profile_picture_url: string;
 };
 
+export interface Medication {
+  id: number;
+  patient_id: number;
+  linked_health_system: boolean;
+  name: string;
+  details: string;
+  dosage: string;
+  active: boolean;
+  administration_route?: string;
+  flaggedForReview: boolean;
+  created_date: Date;
+  updated_date: Date;
+}
+
+export interface Allergies {
+  id: number;
+  patient_id: number;
+  linked_health_system: boolean;
+  topic: string;
+  details: string;
+  active: boolean;
+  severity: 'Mild' | 'Moderate' | 'Severe';
+  onset_date: Date;
+  created_date: Date;
+  updated_date: Date;
+}
+
+export interface EmergencyCare {
+  id: number;
+  patient_id: number;
+  linked_health_system: boolean;
+  topic: string;
+  details: string;
+  created_date: Date;
+  updated_date: Date;
+}
+
 export interface Patient {
   id: number;
   user_id: string;
-  name: string;
-  age?: number;
+  blood_type?: string;
+  date_of_birth?: Date;
+  first_name: string;
+  gender?: string;
+  height?: number;
+  height_unit?: string;
+  last_name: string;
+  middle_name?: string;
+  profile_image_data?: string;
   relationship?: string;
   weight?: number;
-  height?: number;
-  gender?: string;
-  birthdate?: Date;
+  weight_unit?: string;
+  created_date: Date;
+  updated_date: Date;
 }
 
 export interface PatientSnapshot {
@@ -22,28 +66,29 @@ export interface PatientSnapshot {
   patient_id: number;
   summary: string;
   health_issues: string;
-  created_at: Date;
-  updated_at: Date;
+  created_date: Date;
+  updated_date: Date;
 }
 
 export interface MedicalCondition {
   id: number;
   patient_id: number;
   condition_name: string;
-  diagnosed_at: Date;
-  created_at: Date;
-  updated_at: Date;
+  diagnosed_date: Date;
   linked_health_system: boolean;
+  flagged_for_review: boolean;
+  created_date: Date;
+  updated_date: Date;
 }
 
 export interface MedicalEquipment {
   id: number;
   patient_id: number;
   equipment_name: string;
-  description: string;
+  equipment_description?: string;
   linked_health_system: boolean;
-  created_at: Date;
-  updated_at: Date;
+  created_date: Date;
+  updated_date: Date;
 }
 
 export interface HighLevelGoal {
@@ -51,8 +96,20 @@ export interface HighLevelGoal {
   patient_id: number;
   goal_description: string;
   target_date: Date;
-  created_at: Date;
-  updated_at: Date;
+  status: 'Active' | 'Completed' | 'On Hold' | 'Cancelled';
+  linked_health_system: boolean;
+  created_date: Date;
+  updated_date: Date;
+}
+
+export interface Notes {
+  id: number;
+  patient_id: number;
+  topic: string;
+  details: string;
+  reminder_date: Date;
+  created_date: Date;
+  updated_date: Date;
 }
 
 export const tables = {
@@ -61,5 +118,9 @@ export const tables = {
   PATIENT_SNAPSHOT: 'patient_snapshots',
   MEDICAL_CONDITION: 'medical_conditions',
   MEDICAL_EQUIPMENT: 'medical_equipment',
-  HIGH_LEVEL_GOAL: 'high_level_goals'
+  HIGH_LEVEL_GOAL: 'high_level_goals',
+  EMERGENCY_CARE: 'emergency_care',
+  ALLERGIES: 'allergies',
+  MEDICATION: 'medications',
+  NOTES: 'notes'
 }
