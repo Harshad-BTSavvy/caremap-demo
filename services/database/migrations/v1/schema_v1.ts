@@ -1,46 +1,8 @@
 export interface User {
   id: string;
-  name: string;
   email: string;
-  profile_picture_url: string;
-};
-
-export interface Medication {
-  id: number;
-  patient_id: number;
-  linked_health_system: boolean;
   name: string;
-  details: string;
-  dosage: string;
-  active: boolean;
-  administration_route?: string;
-  flaggedForReview: boolean;
-  created_date: Date;
-  updated_date: Date;
-}
-
-export interface Allergies {
-  id: number;
-  patient_id: number;
-  linked_health_system: boolean;
-  topic: string;
-  details: string;
-  active: boolean;
-  severity: 'Mild' | 'Moderate' | 'Severe';
-  onset_date: Date;
-  created_date: Date;
-  updated_date: Date;
-}
-
-export interface EmergencyCare {
-  id: number;
-  patient_id: number;
-  linked_health_system: boolean;
-  topic: string;
-  details: string;
-  created_date: Date;
-  updated_date: Date;
-}
+};
 
 export interface Patient {
   id: number;
@@ -53,7 +15,7 @@ export interface Patient {
   height_unit?: string;
   last_name: string;
   middle_name?: string;
-  profile_image_data?: string;
+  profile_picture_url?: string;
   relationship?: string;
   weight?: number;
   weight_unit?: string;
@@ -64,63 +26,93 @@ export interface Patient {
 export interface PatientSnapshot {
   id: number;
   patient_id: number;
-  summary: string;
-  health_issues: string;
+  health_issues?: string;
+  patient_overview?: string;
   created_date: Date;
   updated_date: Date;
 }
 
-export interface MedicalCondition {
+export interface PatientCondition {
   id: number;
   patient_id: number;
-  condition_name: string;
-  diagnosed_date: Date;
   linked_health_system: boolean;
-  flagged_for_review: boolean;
+  condition_name: string;
   created_date: Date;
   updated_date: Date;
 }
 
-export interface MedicalEquipment {
+export interface PatientEquipment {
   id: number;
   patient_id: number;
+  linked_health_system: boolean;
   equipment_name: string;
   equipment_description?: string;
-  linked_health_system: boolean;
   created_date: Date;
   updated_date: Date;
 }
 
-export interface HighLevelGoal {
+export interface PatientGoal {
   id: number;
   patient_id: number;
-  goal_description: string;
-  target_date: Date;
-  status: 'Active' | 'Completed' | 'On Hold' | 'Cancelled';
   linked_health_system: boolean;
+  goal_description: string;
+  target_date?: Date;
+  status?: 'Active' | 'Completed' | 'On Hold' | 'Cancelled';
   created_date: Date;
   updated_date: Date;
 }
 
-export interface Notes {
+export interface PatientEmergencyCare {
+  id: number;
+  patient_id: number;
+  linked_health_system: boolean;
+  topic: string;
+  details?: string;
+  created_date: Date;
+  updated_date: Date;
+}
+
+export interface PatientAllergy {
+  id: number;
+  patient_id: number;
+  linked_health_system: boolean;
+  topic: string;
+  details?: string;
+  onset_date: Date;
+  severity?: 'Mild' | 'Moderate' | 'Severe';
+  created_date: Date;
+  updated_date: Date;
+}
+
+export interface PatientMedication {
+  id: number;
+  patient_id: number;
+  linked_health_system: boolean;
+  name: string;
+  details: string;
+  created_date: Date;
+  updated_date: Date;
+}
+
+export interface PatientNote {
   id: number;
   patient_id: number;
   topic: string;
-  details: string;
-  reminder_date: Date;
+  details?: string;
+  reminder_date?: Date;
   created_date: Date;
   updated_date: Date;
 }
 
 export const tables = {
-  USER: 'users',
-  PATIENT: 'patients',
-  PATIENT_SNAPSHOT: 'patient_snapshots',
-  MEDICAL_CONDITION: 'medical_conditions',
-  MEDICAL_EQUIPMENT: 'medical_equipment',
-  HIGH_LEVEL_GOAL: 'high_level_goals',
-  EMERGENCY_CARE: 'emergency_care',
-  ALLERGIES: 'allergies',
-  MEDICATION: 'medications',
-  NOTES: 'notes'
+  USER: 'USER',
+  PATIENT: 'PATIENT',
+  PATIENT_SNAPSHOT: 'PATIENT_SNAPSHOT',
+  PATIENT_CONDITION: 'PATIENT_CONDITION',
+  PATIENT_EQUIPMENT: 'PATIENT_EQUIPMENT',
+  PATIENT_GOAL: 'PATIENT_GOAL',
+  PATIENT_EMERGENCY_CARE: 'PATIENT_EMERGENCY_CARE',
+  PATIENT_ALLERGY: 'PATIENT_ALLERGY',
+  PATIENT_MEDICATION: 'PATIENT_MEDICATION',
+  PATIENT_NOTE: 'PATIENT_NOTE'
 }

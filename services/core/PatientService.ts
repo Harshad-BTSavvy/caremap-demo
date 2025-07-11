@@ -2,56 +2,49 @@ import { Patient } from '@/services/database/migrations/v1/schema_v1';
 import { PatientModel } from '@/services/database/models/PatientModel';
 import { logger } from '@/services/logging/logger';
 import { useModel, getCurrentTimestamp } from '@/services/core/utils';
+import { isExistingUser } from '@/services/core/UserService';
 
 // Single shared instance of model
 const patientModel = new PatientModel();
-
-export const isExistingPatientByUserId = async (userId: string): Promise<boolean> => {
-    const existingPatient = await getPatientByUserId(userId);
-    return !!existingPatient;
-}
 
 export const isExistingPatientById = async (id: number): Promise<boolean> => {
     const existingPatient = await getPatient(id);
     return !!existingPatient;
 }
 
-export const createPatient = async (user: any): Promise<Patient> => {
+export const isExistingPatientByUserId = async (userId: string): Promise<boolean> => {
+    const existingPatient = await getPatientByUserId(userId);
+    return !!existingPatient;
+}
+
+export const createPatient = async (patient: Partial<Patient>): Promise<Patient | null> => {
     return useModel(patientModel, async (model) => {
-        const exists = await isExistingPatientByUserId(user.id);
-        if (exists) {
-            const patient = await getPatientByUserId(user.id);
-            return patient!;
+        if (!patient.user_id || !(await isExistingUser(patient.user_id))) {
+            logger.debug("Cannot create patient: User does not exist", patient.user_id);
+            return null;
+        }
+
+        if (!patient.first_name || !patient.last_name) {
+            logger.debug("Cannot create patient: First name and last name are required");
+            return null;
+        }
+
+        const existingPatient = await getPatientByUserId(patient.user_id);
+        if (existingPatient) {
+            logger.debug("Patient already exists for user: ", patient.user_id);
+            return existingPatient;
         }
 
         const now = getCurrentTimestamp();
-        const nameParts = user.name.split(' ');
-        const firstName = nameParts[0];
-        const lastName = nameParts[nameParts.length - 1];
-        // If there are more than 2 parts, join the middle parts as middle name, otherwise undefined
-        const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : undefined;
-
-        const newPatient: Partial<Patient> = {
-            user_id: user.id,
-            first_name: firstName,
-            last_name: lastName,
-            middle_name: middleName,
-            profile_image_data: user.profile_picture_url,
+        const newPatient = {
+            ...patient,
             created_date: now,
             updated_date: now
         };
-        await model.insert(newPatient);
-        const patient = await getPatientByUserId(user.id);
-        logger.debug(`Patient saved to DB successfully`, `${newPatient.first_name} ${newPatient.last_name}`);
-        return patient!;
-    });
-}
 
-export const getPatientByUserId = async (userId: string): Promise<Patient | null> => {
-    return useModel(patientModel, async (model) => {
-        const result = await model.getFirstByFields({ user_id: userId });
-        logger.debug("DB Patient data: ", result);
-        return result;
+        const created = await model.insert(newPatient);
+        logger.debug("Patient created: ", created);
+        return created;
     });
 }
 
@@ -59,6 +52,14 @@ export const getPatient = async (id: number): Promise<Patient | null> => {
     return useModel(patientModel, async (model) => {
         const result = await model.getFirstByFields({ id });
         logger.debug("DB Patient data: ", result);
+        return result;
+    });
+}
+
+export const getPatientByUserId = async (userId: string): Promise<Patient | null> => {
+    return useModel(patientModel, async (model) => {
+        const result = await model.getFirstByFields({ user_id: userId });
+        logger.debug("DB Patient data by user ID: ", result);
         return result;
     });
 }
@@ -75,10 +76,22 @@ export const updatePatient = async (patientUpdate: Partial<Patient>, whereMap: P
             ...patientUpdate,
             updated_date: getCurrentTimestamp()
         };
-
         const updatedPatient = await model.updateByFields(updateData, whereMap);
-        logger.debug("Updated DB Patient data: ", updatedPatient);
+        logger.debug("Updated Patient: ", updatedPatient);
         return updatedPatient;
+    });
+}
+
+export const deletePatient = async (id: number): Promise<boolean> => {
+    return useModel(patientModel, async (model) => {
+        if (!(await isExistingPatientById(id))) {
+            logger.debug("Patient not found for deletion: ", id);
+            return false;
+        }
+
+        await model.deleteByFields({ id });
+        logger.debug("Deleted Patient: ", id);
+        return true;
     });
 }
 
