@@ -12,6 +12,7 @@ import { UserContext } from "@/context/UserContext";
 import { initializeAuthSession } from "@/services/auth-service/google-auth";
 import { syncPatientSession } from "@/services/auth-service/session-service";
 import { ShowAlert } from "@/services/common/ShowAlert";
+import { calculateAge } from "@/services/core/utils";
 import { logger } from "@/services/logging/logger";
 import { ROUTES } from "@/utils/route";
 import palette from "@/utils/theme/color";
@@ -129,13 +130,7 @@ export default function HealthProfile() {
 
         <View className="flex-row items-center justify-between">
           <Avatar size="xl">
-            {patient?.profile_picture ? (
-              <AvatarImage source={{ uri: patient.profile_picture }} />
-            ) : (
-              <View className="w-full h-full items-center justify-center bg-gray-200 rounded-full">
-                <Icon as={User} size="xl" className="text-gray-500" />
-              </View>
-            )}
+            <AvatarImage source={{ uri: patient?.profile_picture }} />
             <View className="absolute bottom-0 right-0 bg-white rounded-full p-1">
               <Icon as={Camera} size="sm" className="text-black" />
             </View>
@@ -143,9 +138,14 @@ export default function HealthProfile() {
 
           <View className="mr-4">
             <Text className="text-lg text-white font-semibold">
-              {patient?.name}
+              {`${patient?.first_name} ${patient?.last_name}`}
             </Text>
-            <Text className="text-white">Age: {patient?.age ?? "Not set"}</Text>
+            <Text className="text-white">
+              Age:{" "}
+              {calculateAge(patient?.date_of_birth)
+                ? `${calculateAge(patient?.date_of_birth)} years`
+                : "Not set"}
+            </Text>
             <Text className="text-white">
               Weight: {patient?.weight ? `${patient.weight} kg` : "Not set"}
             </Text>
