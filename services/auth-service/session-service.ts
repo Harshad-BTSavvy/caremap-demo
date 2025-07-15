@@ -23,15 +23,10 @@ export async function syncPatientSession(user: User): Promise<Patient> {
         return fullPatient;
     }
 
-    // Create patient with name split into first and last name
-    const nameParts = user.name.split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
-    
     let newPatient = await createPatient({
         user_id: user.id,
-        first_name: firstName,
-        last_name: lastName
+        first_name: "John",
+        last_name: "Doe"
     });
     
     if (!newPatient) throw new Error("Patient creation failed.");

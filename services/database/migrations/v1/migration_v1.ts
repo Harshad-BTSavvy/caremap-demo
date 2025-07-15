@@ -20,7 +20,7 @@ export const up = async (db: SQLiteDatabase) => {
       height REAL,
       height_unit TEXT,
       last_name TEXT NOT NULL,
-      middle_name TEXT DEFAULT NULL,
+      middle_name TEXT,
       profile_picture TEXT,
       relationship TEXT,
       weight REAL,
