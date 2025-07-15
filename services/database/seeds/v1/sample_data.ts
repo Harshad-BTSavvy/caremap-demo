@@ -3,7 +3,6 @@ import {
   PatientEquipment, 
   PatientGoal, 
   PatientSnapshot,
-  PatientNote,
   PatientEmergencyCare,
   PatientAllergy,
   PatientMedication,

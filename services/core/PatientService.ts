@@ -19,20 +19,21 @@ export const isExistingPatientByUserId = async (userId: string): Promise<boolean
 
 export const createPatient = async (patient: Partial<Patient>): Promise<Patient | null> => {
     return useModel(patientModel, async (model) => {
-        if (!patient.user_id || !(await isExistingUser(patient.user_id))) {
-            logger.debug("Cannot create patient: User does not exist", patient.user_id);
+        if (!patient.user_id) {
+            logger.debug("Cannot create patient: Missing user_id");
             return null;
+        }
+
+        // Check if patient already exists first
+        const existingPatient = await getPatientByUserId(patient.user_id);
+        if (existingPatient) {
+            logger.debug("Patient already exists for user: ", patient.user_id);
+            return existingPatient;
         }
 
         if (!patient.first_name || !patient.last_name) {
             logger.debug("Cannot create patient: First name and last name are required");
             return null;
-        }
-
-        const existingPatient = await getPatientByUserId(patient.user_id);
-        if (existingPatient) {
-            logger.debug("Patient already exists for user: ", patient.user_id);
-            return existingPatient;
         }
 
         const now = getCurrentTimestamp();
@@ -44,6 +45,12 @@ export const createPatient = async (patient: Partial<Patient>): Promise<Patient 
 
         const created = await model.insert(newPatient);
         logger.debug("Patient created: ", created);
+        
+        // If we got a raw SQLite result instead of a patient object, fetch the patient
+        if (created && !created.id && created.lastInsertRowId) {
+            return getPatient(created.lastInsertRowId);
+        }
+        
         return created;
     });
 }

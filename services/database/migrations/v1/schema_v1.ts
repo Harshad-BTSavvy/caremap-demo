@@ -15,7 +15,7 @@ export interface Patient {
   height_unit?: string;
   last_name: string;
   middle_name?: string;
-  profile_picture_url?: string;
+  profile_picture?: string;
   relationship?: string;
   weight?: number;
   weight_unit?: string;
