@@ -55,7 +55,7 @@ export const createPatient = async (user: User): Promise<Patient> => {
 
         const newPatient: Partial<Patient> = {
             user_id: user.id,
-            name: user.name
+            name: user.name,
         };
         await model.insert(newPatient);
         const patient = await getPatientByUserId(user.id);
@@ -115,7 +115,6 @@ export const createPatientSnapshot = async (snapshot: Partial<PatientSnapshot>):
             return existingSnapshot;
         }
 
-        const now = new Date().toISOString();
         const newSnapshot = {
             ...snapshot,
             created_at: new Date(),
@@ -162,7 +161,7 @@ export const createMedicalCondition = async (condition: Partial<MedicalCondition
             return null;
         }
 
-        const now = new Date().toISOString();
+        const now = new Date();
         const newCondition = {
             ...condition,
             diagnosed_at: condition.diagnosed_at || now,
@@ -233,7 +232,7 @@ export const createMedicalEquipment = async (equipment: Partial<MedicalEquipment
             return null;
         }
 
-        const now = new Date().toISOString();
+        const now = new Date();
         const newEquipment = {
             ...equipment,
             created_at: now,
@@ -293,4 +292,3 @@ export const deleteMedicalEquipment = async (id: number): Promise<boolean> => {
         return true;
     });
 }
-

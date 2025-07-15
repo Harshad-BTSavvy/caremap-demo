@@ -1,14 +1,13 @@
+import { tables } from "@/services/database/migrations/v1/schema_v1";
 import { logger } from "@/services/logging/logger";
 import { SQLiteDatabase } from "expo-sqlite";
-import { tables } from "@/services/database/migrations/v1/schema_v1";
 
 export const up = async (db: SQLiteDatabase) => {
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS ${tables.USER} (
       id TEXT PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
-      name TEXT,
-      profile_picture_url TEXT
+      name TEXT
     );
 
     CREATE TABLE IF NOT EXISTS ${tables.PATIENT} (
@@ -21,6 +20,7 @@ export const up = async (db: SQLiteDatabase) => {
       height REAL,
       gender TEXT,
       birthdate TEXT,
+      profile_picture TEXT,
       FOREIGN KEY(user_id) REFERENCES ${tables.USER}(id) ON DELETE CASCADE
     );
 
@@ -66,14 +66,6 @@ export const up = async (db: SQLiteDatabase) => {
       FOREIGN KEY (patient_id) REFERENCES ${tables.PATIENT}(id) ON DELETE CASCADE
     );
   `);
-
-  // Check if profile_picture_url column exists and add if missing
-  const columns = await db.getAllAsync(`PRAGMA table_info(${tables.USER});`);
-  const hasProfilePicture = columns.some((col: any) => col.name === 'profile_picture_url');
-
-  if (!hasProfilePicture) {
-    await db.execAsync(`ALTER TABLE ${tables.USER} ADD COLUMN profile_picture_url TEXT;`);
-  }
 
   logger.debug(`Tables created for V1.`);
 };

@@ -1,12 +1,12 @@
-import { SQLiteDatabase } from "expo-sqlite";
 import { tables } from "@/services/database/migrations/v1/schema_v1";
-import { 
-    samplePatientSnapshots, 
-    sampleMedicalConditions, 
+import {
+    sampleHighLevelGoals,
+    sampleMedicalConditions,
     sampleMedicalEquipment,
-    sampleHighLevelGoals 
+    samplePatientSnapshots
 } from "@/services/database/seeds/v1/sample_data";
 import { logger } from "@/services/logging/logger";
+import { SQLiteDatabase } from "expo-sqlite";
 
 // To escape single quotes in SQL strings to prevent SQL injection
 const escapeSQL = (str: string | undefined) => (str || '').replace(/'/g, "''");
@@ -27,8 +27,8 @@ export async function seedDatabase(db: SQLiteDatabase) {
                     ${snapshot.patient_id},
                     '${escapeSQL(snapshot.summary)}',
                     '${escapeSQL(snapshot.health_issues)}',
-                    '${snapshot.created_at || new Date().toISOString()}',
-                    '${snapshot.updated_at || new Date().toISOString()}'
+                    '${(snapshot.created_at || new Date()).toISOString()}',
+                    '${(snapshot.updated_at || new Date()).toISOString()}'
                 )`
             );
         }
@@ -47,10 +47,10 @@ export async function seedDatabase(db: SQLiteDatabase) {
                 ) VALUES (
                     ${condition.patient_id},
                     '${escapeSQL(condition.condition_name)}',
-                    '${condition.diagnosed_at || new Date().toISOString()}',
+                    '${(condition.diagnosed_at || new Date()).toISOString()}',
                     ${condition.linked_health_system ? 1 : 0},
-                    '${condition.created_at || new Date().toISOString()}',
-                    '${condition.updated_at || new Date().toISOString()}'
+                    '${(condition.created_at || new Date()).toISOString()}',
+                    '${(condition.updated_at || new Date()).toISOString()}'
                 )`
             );
         }
@@ -71,8 +71,8 @@ export async function seedDatabase(db: SQLiteDatabase) {
                     '${escapeSQL(equipment.equipment_name)}',
                     '${escapeSQL(equipment.description)}',
                     ${equipment.linked_health_system ? 1 : 0},
-                    '${equipment.created_at || new Date().toISOString()}',
-                    '${equipment.updated_at || new Date().toISOString()}'
+                    '${(equipment.created_at || new Date()).toISOString()}',
+                    '${(equipment.updated_at || new Date()).toISOString()}'
                 )`
             );
         }
@@ -90,15 +90,15 @@ export async function seedDatabase(db: SQLiteDatabase) {
                 ) VALUES (
                     ${goal.patient_id},
                     '${escapeSQL(goal.goal_description)}',
-                    '${goal.target_date || new Date().toISOString()}',
-                    '${goal.created_at || new Date().toISOString()}',
-                    '${goal.updated_at || new Date().toISOString()}'
+                    '${(goal.target_date || new Date()).toISOString()}',
+                    '${(goal.created_at || new Date()).toISOString()}',
+                    '${(goal.updated_at || new Date()).toISOString()}'
                 )`
             );
         }
 
-    logger.debug('Sample data seeded successfully.');
-  } catch (error) {
-    logger.debug('Error seeding data:', error);
-  }
+        logger.debug('Sample data seeded successfully.');
+    } catch (error) {
+        logger.debug('Error seeding data:', error);
+    }
 }; 

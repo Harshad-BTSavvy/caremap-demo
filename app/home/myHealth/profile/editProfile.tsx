@@ -37,7 +37,7 @@ export default function EditProfilePage() {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   useEffect(() => {
-    logger.debug("Edit Patient: ",patient);
+    logger.debug("Edit Patient: ", patient);
     if (!patient) {
       console.error("Error", "No patient found. Please try again.");
       router.replace(ROUTES.MY_HEALTH);
@@ -148,7 +148,7 @@ export default function EditProfilePage() {
 
         <View className="flex-row mb-5 items-center justify-start px-4 ">
           <Avatar size="xl">
-            <AvatarImage source={{ uri: user.profile_picture_url }} />
+            <AvatarImage source={{ uri: patient?.profile_picture }} />
             <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 ">
               <Icon as={Camera} size="sm" className="text-black" />
             </View>

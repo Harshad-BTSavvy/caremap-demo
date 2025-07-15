@@ -16,7 +16,7 @@ import { logger } from "@/services/logging/logger";
 import { ROUTES } from "@/utils/route";
 import palette from "@/utils/theme/color";
 import { Route, router } from "expo-router";
-import { Camera } from "lucide-react-native";
+import { Camera, User } from "lucide-react-native";
 import { useContext, useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -129,7 +129,13 @@ export default function HealthProfile() {
 
         <View className="flex-row items-center justify-between">
           <Avatar size="xl">
-            <AvatarImage source={{ uri: user.profile_picture_url }} />
+            {patient?.profile_picture ? (
+              <AvatarImage source={{ uri: patient.profile_picture }} />
+            ) : (
+              <View className="w-full h-full items-center justify-center bg-gray-200 rounded-full">
+                <Icon as={User} size="xl" className="text-gray-500" />
+              </View>
+            )}
             <View className="absolute bottom-0 right-0 bg-white rounded-full p-1">
               <Icon as={Camera} size="sm" className="text-black" />
             </View>
@@ -137,7 +143,7 @@ export default function HealthProfile() {
 
           <View className="mr-4">
             <Text className="text-lg text-white font-semibold">
-              {user.name}
+              {patient?.name}
             </Text>
             <Text className="text-white">Age: {patient?.age ?? "Not set"}</Text>
             <Text className="text-white">

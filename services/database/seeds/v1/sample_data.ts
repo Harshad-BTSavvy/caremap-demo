@@ -1,59 +1,53 @@
-import {
-  PatientSnapshot,
-  MedicalCondition,
-  MedicalEquipment,
-  HighLevelGoal,
-} from "@/services/database/migrations/v1/schema_v1";
+import { HighLevelGoal, MedicalCondition, MedicalEquipment, PatientSnapshot } from "@/services/database/migrations/v1/schema_v1";
 
 // Helper function to get current timestamp in ISO format
-const now = new Date().toISOString();
-const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+const now = new Date();
+const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
 export const samplePatientSnapshots: Partial<PatientSnapshot>[] = [
   {
     patient_id: 1,
-    summary:
-      "Patient is showing good progress with diabetes management and physical therapy. Blood sugar levels are stabilizing and mobility has improved.",
+    summary: "Patient is showing good progress with diabetes management and physical therapy. Blood sugar levels are stabilizing and mobility has improved.",
     health_issues: "Type 2 Diabetes, Hypertension, Chronic Back Pain, Asthma",
     created_at: lastWeek,
-    updated_at: now,
-  },
+    updated_at: now
+  }
 ];
 
 export const sampleMedicalConditions: Partial<MedicalCondition>[] = [
   {
     patient_id: 1,
     condition_name: "Type 2 Diabetes",
-    diagnosed_at: "2023-06-15T10:00:00Z",
+    diagnosed_at: new Date("2023-06-15T10:00:00Z"),
     linked_health_system: true,
     created_at: lastWeek,
-    updated_at: lastWeek,
+    updated_at: now
   },
   {
     patient_id: 1,
     condition_name: "Hypertension",
-    diagnosed_at: "2023-07-20T14:30:00Z",
+    diagnosed_at: new Date("2023-07-20T14:30:00Z"),
     linked_health_system: true,
     created_at: lastWeek,
-    updated_at: lastWeek,
+    updated_at: now
   },
   {
     patient_id: 1,
     condition_name: "Chronic Back Pain",
-    diagnosed_at: "2023-05-10T09:15:00Z",
+    diagnosed_at: new Date("2023-05-10T09:15:00Z"),
     linked_health_system: false,
     created_at: yesterday,
-    updated_at: yesterday,
+    updated_at: now
   },
   {
     patient_id: 1,
     condition_name: "Asthma",
-    diagnosed_at: "2023-03-25T08:45:00Z",
+    diagnosed_at: new Date("2023-03-25T08:45:00Z"),
     linked_health_system: true,
     created_at: now,
-    updated_at: now,
-  },
+    updated_at: now
+  }
 ];
 
 export const sampleMedicalEquipment: Partial<MedicalEquipment>[] = [
@@ -63,7 +57,7 @@ export const sampleMedicalEquipment: Partial<MedicalEquipment>[] = [
     description: "Dexcom G6 CGM system for real-time blood glucose monitoring",
     linked_health_system: true,
     created_at: lastWeek,
-    updated_at: now,
+    updated_at: now
   },
   {
     patient_id: 1,
@@ -71,7 +65,7 @@ export const sampleMedicalEquipment: Partial<MedicalEquipment>[] = [
     description: "Omron BP monitor for daily blood pressure readings",
     linked_health_system: true,
     created_at: lastWeek,
-    updated_at: now,
+    updated_at: now
   },
   {
     patient_id: 1,
@@ -79,7 +73,7 @@ export const sampleMedicalEquipment: Partial<MedicalEquipment>[] = [
     description: "Portable TENS device for pain management",
     linked_health_system: false,
     created_at: yesterday,
-    updated_at: now,
+    updated_at: now
   },
   {
     patient_id: 1,
@@ -87,32 +81,30 @@ export const sampleMedicalEquipment: Partial<MedicalEquipment>[] = [
     description: "Personal peak flow meter for daily lung function monitoring",
     linked_health_system: true,
     created_at: now,
-    updated_at: now,
-  },
+    updated_at: now
+  }
 ];
 
 export const sampleHighLevelGoals: Partial<HighLevelGoal>[] = [
   {
     patient_id: 1,
-    goal_description:
-      "Reduce A1C levels to below 6.5% through diet and exercise",
-    target_date: "2024-06-30T00:00:00Z",
+    goal_description: "Reduce A1C levels to below 6.5% through diet and exercise",
+    target_date: new Date("2024-06-30T00:00:00Z"),
     created_at: lastWeek,
-    updated_at: now,
+    updated_at: now
   },
   {
     patient_id: 1,
     goal_description: "Maintain blood pressure below 130/80 consistently",
-    target_date: "2024-03-31T00:00:00Z",
+    target_date: new Date("2024-03-31T00:00:00Z"),
     created_at: lastWeek,
-    updated_at: now,
+    updated_at: now
   },
   {
     patient_id: 1,
-    goal_description:
-      "Complete physical therapy program and return to regular walking routine",
-    target_date: "2024-04-15T00:00:00Z",
+    goal_description: "Complete physical therapy program and return to regular walking routine",
+    target_date: new Date("2024-04-15T00:00:00Z"),
     created_at: yesterday,
-    updated_at: now,
-  },
-];
+    updated_at: now
+  }
+]; 

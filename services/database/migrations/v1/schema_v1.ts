@@ -2,7 +2,6 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  profile_picture_url: string;
 };
 
 export interface Patient {
@@ -15,6 +14,7 @@ export interface Patient {
   height?: number;
   gender?: string;
   birthdate?: Date;
+  profile_picture?: string;
 }
 
 export interface PatientSnapshot {
