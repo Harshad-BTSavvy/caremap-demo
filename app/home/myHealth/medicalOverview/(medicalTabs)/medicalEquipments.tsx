@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Keyboard,
   TouchableWithoutFeedback,
+  FlatList
 } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
 import palette from "@/utils/theme/color";
@@ -41,7 +42,7 @@ export default function MedicalEquipmentScreen() {
       getPatientEquipmentsByPatientId(patient.id).then(setEquipmentList);
     }
   }, [patient]);
-  
+
 
   const handleAddOrUpdate = async (data: {
     name: string;
@@ -108,7 +109,7 @@ export default function MedicalEquipmentScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header title="Medical Equipments" />
-      <View className="p-4 bg-white flex-1">
+      {/* <View className="p-4 bg-white flex-1">
         <Text
           style={{ color: palette.heading }}
           className="text-lg font-semibold mb-2"
@@ -156,7 +157,64 @@ export default function MedicalEquipmentScreen() {
             Add medical equipment
           </Text>
         </TouchableOpacity>
+      </View> */}
+      <View className="p-4 bg-white flex-1">
+  <Text
+    style={{ color: palette.heading }}
+    className="text-lg font-semibold mb-2"
+  >
+    Enter any medical devices or equipment that you rely on for daily living
+  </Text>
+
+  <View className="border-t border-gray-300 mb-4" />
+
+  <FlatList
+    data={equipmentList}
+    keyExtractor={(item) => item.id.toString()}
+    showsVerticalScrollIndicator={true}
+    renderItem={({ item }) => (
+      <View className="flex-row items-start border border-gray-300 rounded-xl p-4 mb-4">
+        <View className="ml-3 flex-1">
+          <Text className="font-semibold text-base">
+            {item.equipment_name}
+          </Text>
+          <Text className="text-gray-500 text-sm mt-1">
+            {item.equipment_description}
+          </Text>
+        </View>
+
+        <ActionPopover
+          onEdit={() => {
+            setEditingItem(item);
+            setShowForm(true);
+          }}
+          onDelete={() => {
+            setItemToDelete(item);
+            setShowDialog(true);
+          }}
+        />
       </View>
+    )}
+    ListEmptyComponent={
+      <Text className="text-gray-500 text-center my-4">
+        No medical equipment found.
+      </Text>
+    }
+  />
+
+  <Divider className="bg-gray-300" />
+
+  <TouchableOpacity
+    style={{ backgroundColor: palette.primary }}
+    className="py-3 rounded-lg mt-2"
+    onPress={() => setShowForm(true)}
+  >
+    <Text className="text-white font-bold text-center">
+      Add medical equipment
+    </Text>
+  </TouchableOpacity>
+</View>
+
 
       <CustomAlertDialog
         isOpen={showDialog}
