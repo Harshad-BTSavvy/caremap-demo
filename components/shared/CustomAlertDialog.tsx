@@ -49,7 +49,7 @@ export const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
           <Text className="text-base">{description}</Text>
         ) : null}
       </AlertDialogBody>
-      <AlertDialogFooter>
+      <AlertDialogFooter className="mt-4">
         <Button
           variant="solid"
           action="secondary"
