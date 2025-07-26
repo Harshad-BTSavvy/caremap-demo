@@ -83,7 +83,7 @@ export default function HealthProfile() {
       name: "Medical History",
       image: require("../../../assets/images/medical-history.png"),
       badge: 1,
-      link: ROUTES.MEDICAL_OVERVIEW,
+      link: ROUTES.MEDICAL_HISTORY,
     },
     {
       name: "Notes",
