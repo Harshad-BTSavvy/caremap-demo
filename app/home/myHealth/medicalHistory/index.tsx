@@ -32,7 +32,7 @@ function medicalHistory() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header title=" medicalHistory" />
+      <Header title=" Medical History" />
 
       <View className="p-4">
         <View className=" rounded-lg">

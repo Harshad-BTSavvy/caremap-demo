@@ -9,6 +9,8 @@ import {
   TouchableWithoutFeedback,
   FlatList,
 } from "react-native";
+import { CalendarDaysIcon, Icon } from "@/components/ui/icon";
+
 import { ChevronLeft } from "lucide-react-native";
 import palette from "@/utils/theme/color";
 import Header from "@/components/shared/Header";
@@ -88,7 +90,6 @@ export default function Hospitalization() {
 
     setShowForm(false);
     setEditingItem(null);
-    refreshList();
   };
 
   const refreshList = async () => {
@@ -121,7 +122,7 @@ export default function Hospitalization() {
           day: "2-digit",
           year: "2-digit",
         })
-        .replace(/\//g, "-"); // turns 01/14/25 -> 01-14-25
+        .replace(/\//g, "-");
     } catch (e) {
       return "";
     }
@@ -144,24 +145,26 @@ export default function Hospitalization() {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View className="flex-row items-start border border-gray-300 rounded-xl p-4 mb-4">
-              {/* Text Content */}
-              <View className="flex-1">
-                <Text className="font-semibold mb-1">
-                  Date of Admission: {formatDisplayDate(item.admission_date)}
-                </Text>
+              <View className="flex-1 ">
+                <View className="flex-row mb-2 flex-wrap">
+                  <Text className="font-medium">Date of Admission:</Text>
+                  <Text className="font-normal ml-8">
+                    {formatDisplayDate(item.admission_date)}
+                  </Text>
+                </View>
 
-                <Text className="font-semibold mb-1">
-                  Date of Discharge: {formatDisplayDate(item.discharge_date)}
-                </Text>
+                <View className="flex-row mb-2 flex-wrap">
+                  <Text className="font-medium">Date of Discharge: </Text>
+                  <Text className="font-normal ml-8">
+                    {formatDisplayDate(item.discharge_date)}
+                  </Text>
+                </View>
 
                 {item.details ? (
-                  <Text className="text-gray-500 text-sm mt-1">
-                    {item.details}
-                  </Text>
+                  <Text className="text-gray-500  mt-1">{item.details}</Text>
                 ) : null}
               </View>
 
-              {/* Popover actions */}
               <ActionPopover
                 onEdit={() => {
                   setEditingItem(item);
@@ -229,216 +232,6 @@ export default function Hospitalization() {
   );
 }
 
-// import React, { useContext, useEffect, useState } from "react";
-// import {
-//   View,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   SafeAreaView,
-//   Keyboard,
-//   TouchableWithoutFeedback,
-//   FlatList,
-// } from "react-native";
-// import { ChevronLeft } from "lucide-react-native";
-// import palette from "@/utils/theme/color";
-// import Header from "@/components/shared/Header";
-// import { Divider } from "@/components/ui/divider";
-// import ActionPopover from "@/components/shared/ActionPopover";
-// import { CustomAlertDialog } from "@/components/shared/CustomAlertDialog";
-// import { PatientContext } from "@/context/PatientContext";
-// import { useCustomToast } from "@/components/shared/useCustomToast";
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
-// import { Hospitalization } from "@/services/database/migrations/v1/schema_v1";
-// import {
-//   createHospitalization,
-//   deleteHospitalization,
-//   getHospitalizationsByPatientId,
-//   updateHospitalization,
-// } from "@/services/core/HospitalizationService";
-
-// export default function HospitalizationScreen() {
-//   const { patient } = useContext(PatientContext);
-//   const [showForm, setShowForm] = useState(false);
-//   const [editingItem, setEditingItem] = useState<Hospitalization | null>(null);
-//   const [hospitalizations, setHospitalizations] = useState<Hospitalization[]>([]);
-//   const [showDialog, setShowDialog] = useState(false);
-//   const [itemToDelete, setItemToDelete] = useState<Hospitalization | null>(null);
-//   const showToast = useCustomToast();
-
-//   const refreshList = async () => {
-//     if (!patient?.id) return;
-//     try {
-//       const updatedList = await getHospitalizationsByPatientId(patient.id);
-//       console.log("✅ Refreshed list:", updatedList);
-//       if (Array.isArray(updatedList)) {
-//         setHospitalizations(updatedList);
-//       } else {
-//         console.warn("❌ Expected an array but got:", updatedList);
-//         setHospitalizations([]);
-//       }
-//     } catch (err) {
-//       console.error("❌ Failed to fetch hospitalizations:", err);
-//     }
-//   };
-
-//   useEffect(() => {
-//     console.log("👀 useEffect triggered for refresh", { patientId: patient?.id, showForm });
-//     refreshList();
-//   }, [patient?.id, showForm]);
-
-//   const handleAddOrUpdate = async (data: {
-//     admission_date: Date;
-//     discharge_date: Date;
-//     details: string;
-//   }) => {
-//     if (!patient?.id) return;
-
-//     try {
-//       if (editingItem) {
-//         await updateHospitalization(
-//           {
-//             admission_date: data.admission_date,
-//             discharge_date: data.discharge_date,
-//             details: data.details,
-//           },
-//           { id: editingItem.id }
-//         );
-//         showToast({ title: "Updated", description: "Hospitalization updated.", action: "success" });
-//       } else {
-//         await createHospitalization({
-//           patient_id: patient.id,
-//           admission_date: data.admission_date,
-//           discharge_date: data.discharge_date,
-//           details: data.details,
-//         });
-//         showToast({ title: "Added", description: "Hospitalization added.", action: "success" });
-//       }
-//     } catch (err) {
-//       console.error("❌ Error during save:", err);
-//     }
-
-//     setEditingItem(null);
-//     setShowForm(false); // triggers useEffect
-//   };
-
-//   const formatDisplayDate = (date: string | Date | null | undefined): string => {
-//     if (!date) return "";
-//     try {
-//       const d = typeof date === "string" ? new Date(date) : date;
-//       return d.toLocaleDateString("en-US", {
-//         month: "2-digit",
-//         day: "2-digit",
-//         year: "2-digit",
-//       }).replace(/\//g, "-");
-//     } catch {
-//       return "";
-//     }
-//   };
-
-//   if (showForm) {
-//     return (
-//       <HospitalizationForm
-//         onClose={() => {
-//           setShowForm(false);
-//           setEditingItem(null);
-//         }}
-//         onSave={handleAddOrUpdate}
-//         editingItem={editingItem}
-//       />
-//     );
-//   }
-
-//   return (
-//     <SafeAreaView className="flex-1 bg-white">
-//       <Header title="Hospitalizations" />
-//       <View className="p-4 bg-white flex-1">
-//         <Text className="text-blue-600 mb-2 text-center">
-//           {`Hospitalizations count: ${hospitalizations.length}`}
-//         </Text>
-
-//         {hospitalizations.map((h) => (
-//           <Text className="text-xs text-gray-600 text-center" key={h.id}>
-//             {`ID: ${h.id} | Detail: ${h.details}`}
-//           </Text>
-//         ))}
-
-//         <Text className="text-lg font-semibold mb-2" style={{ color: palette.heading }}>
-//           List your active hospitalizations
-//         </Text>
-//         <View className="border-t border-gray-300 mb-4" />
-
-//         <FlatList
-//           data={hospitalizations}
-//           keyExtractor={(item) => item.id.toString()}
-//           renderItem={({ item }) => (
-//             <View className="flex-row items-start border border-gray-300 rounded-xl p-4 mb-4">
-//               <View className="flex-1">
-//                 <Text className="font-semibold mb-1">
-//                   Admission: {formatDisplayDate(item.admission_date)}
-//                 </Text>
-//                 <Text className="font-semibold mb-1">
-//                   Discharge: {formatDisplayDate(item.discharge_date)}
-//                 </Text>
-//                 {item.details ? (
-//                   <Text className="text-gray-500 text-sm mt-1">{item.details}</Text>
-//                 ) : null}
-//               </View>
-//               <ActionPopover
-//                 onEdit={() => {
-//                   setEditingItem(item);
-//                   setShowForm(true);
-//                 }}
-//                 onDelete={() => {
-//                   setItemToDelete(item);
-//                   setShowDialog(true);
-//                 }}
-//               />
-//             </View>
-//           )}
-//           ListEmptyComponent={
-//             <Text className="text-gray-500 text-center my-4">No hospitalizations found.</Text>
-//           }
-//         />
-
-//         <Divider className="bg-gray-300" />
-
-//         <TouchableOpacity
-//           className="py-3 rounded-lg mt-2"
-//           style={{ backgroundColor: palette.primary }}
-//           onPress={() => setShowForm(true)}
-//         >
-//           <Text className="text-white font-bold text-center">Add Hospitalization</Text>
-//         </TouchableOpacity>
-//       </View>
-
-//       <CustomAlertDialog
-//         isOpen={showDialog}
-//         onClose={() => {
-//           setShowDialog(false);
-//           setItemToDelete(null);
-//         }}
-//         title="Confirm Deletion"
-//         description="Are you sure you want to delete this hospitalization?"
-//         confirmText="Delete"
-//         cancelText="Cancel"
-//         confirmButtonProps={{
-//           style: { backgroundColor: palette.primary, marginLeft: 8 },
-//         }}
-//         cancelButtonProps={{ variant: "outline" }}
-//         onConfirm={async () => {
-//           if (itemToDelete) {
-//             await deleteHospitalization(itemToDelete.id);
-//             await refreshList();
-//             showToast({ title: "Deleted", description: "Record deleted.", action: "success" });
-//           }
-//           setShowDialog(false);
-//         }}
-//       />
-//     </SafeAreaView>
-//   );
-// }
-
 function HospitalizationForm({
   onClose,
   onSave,
@@ -467,6 +260,7 @@ function HospitalizationForm({
     setIsSelectingAdmission(isAdmission);
     setDatePickerVisibility(true);
   };
+  const showToast = useCustomToast();
 
   const handleConfirm = (date: Date) => {
     if (isSelectingAdmission) {
@@ -477,6 +271,13 @@ function HospitalizationForm({
     setDatePickerVisibility(false);
   };
 
+  const formatDate = (date: Date) => {
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    // const yy = String(date.getFullYear()).slice(-2);
+    const yy = String(date.getFullYear());
+    return `${mm}-${dd}-${yy}`;
+  };
   const isDisabled = !admission || !discharge || !description.trim();
 
   return (
@@ -504,32 +305,63 @@ function HospitalizationForm({
               : "Enter details of recent hospitalizations"}
           </Text>
 
-          <Text className="text-sm mb-1 text-gray-600">Date of Admission</Text>
-          <TouchableOpacity
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            onPress={() => showPicker(true)}
-          >
-            <Text>
-              {admission ? admission.toDateString() : "Select admission date"}
+          <View className="mb-4">
+            <Text className="text-sm mb-1 text-gray-600">
+              Date of Admission
             </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              className="border border-gray-300 rounded-md p-3 "
+              onPress={() => showPicker(true)}
+            >
+              <View className="flex-row items-center">
+                <TextInput
+                  value={admission ? formatDate(admission) : ""}
+                  placeholder="MM-DD-YY"
+                  className="flex-1 text-base"
+                  editable={false}
+                  pointerEvents="none"
+                />
+                <Icon
+                  as={CalendarDaysIcon}
+                  className="text-typography-500 m-1 w-5 h-5"
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
 
-          <Text className="text-sm mb-1 text-gray-600">Date of Discharge</Text>
-          <TouchableOpacity
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            onPress={() => showPicker(false)}
-          >
-            <Text>
-              {discharge ? discharge.toDateString() : "Select discharge date"}
+          <View className="mb-4">
+            <Text className="text-sm mb-1 text-gray-600">
+              Date of Discharge
             </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              className="border border-gray-300 rounded-md p-3"
+              onPress={() => showPicker(false)}
+            >
+              <View className="flex-row items-center">
+                <TextInput
+                  value={discharge ? formatDate(discharge) : ""}
+                  placeholder="MM-DD-YY"
+                  className="flex-1 text-base"
+                  editable={false}
+                  pointerEvents="none"
+                />
+                <Icon
+                  as={CalendarDaysIcon}
+                  className="text-typography-500 m-1 w-5 h-5"
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
 
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
             onConfirm={handleConfirm}
             onCancel={() => setDatePickerVisibility(false)}
-            maximumDate={new Date()}
+            maximumDate={isSelectingAdmission ? new Date() : undefined}
+            minimumDate={
+              !isSelectingAdmission && admission ? admission : undefined
+            }
           />
 
           <Text className="text-sm mb-1 text-gray-600 mt-2">Description</Text>
@@ -549,6 +381,16 @@ function HospitalizationForm({
             style={{ backgroundColor: palette.primary }}
             onPress={() => {
               if (!isDisabled && admission && discharge) {
+                if (discharge < admission) {
+                  showToast({
+                    title: "Error",
+                    description:
+                      "Discharge date cannot be before admission date.",
+                    action: "warning",
+                  });
+                  return;
+                }
+
                 onSave({
                   admission_date: admission,
                   discharge_date: discharge,

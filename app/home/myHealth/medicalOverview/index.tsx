@@ -12,32 +12,32 @@ function medicalOverview() {
     {
       name: "Snapshot",
       count: "3",
-      icon: require("../../../../assets/images/medicalOverview.png"),
+      icon: require("@/assets/images/medicalOverview.png"),
       link: ROUTES.SNAPSHOT,
     },
     {
       name: "Medical Conditions",
       count: "2",
-      icon: require("../../../../assets/images/emergencyCare.png"),
+      icon: require("@/assets/images/emergencyCare.png"),
       link: ROUTES.MEDICAL_CONDITIONS,
     },
     {
       name: "Medical Equipments",
       count: "14",
-      icon: require("../../../../assets/images/allergies.png"),
+      icon: require("@/assets/images/allergies.png"),
       link: ROUTES.MEDICAL_EQUIPMENTS,
     },
     {
       name: "High level Goals",
       count: "7",
-      icon: require("../../../../assets/images/medications.png"),
+      icon: require("@/assets/images/medications.png"),
       link: ROUTES.HIGH_LEVEL_GOALS,
     },
 
     {
       name: "Hospitalization",
       count: "",
-      icon: require("../../../../assets/images/hospitalization.png"),
+      icon: require("@/assets/images/hospitalization.png"),
       link: ROUTES.SNAPSHOT,
     },
   ];
@@ -70,7 +70,7 @@ function medicalOverview() {
                     </Badge>
                   )}
                   <Image
-                    source={require("../../../../assets/images/arrow.png")}
+                    source={require("@/assets/images/arrow.png")}
                     className="w-4 h-4"
                     resizeMode="contain"
                   />
