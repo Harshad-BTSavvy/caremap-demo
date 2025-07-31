@@ -12,34 +12,29 @@ function medicalOverview() {
     {
       name: "Snapshot",
       count: "3",
-      icon: require("@/assets/images/medicalOverview.png"),
+      icon: require("@/assets/icons/snapshot.png"),
       link: ROUTES.SNAPSHOT,
     },
     {
       name: "Medical Conditions",
       count: "2",
-      icon: require("@/assets/images/emergencyCare.png"),
+      icon: require("@/assets/icons/medical-condition.png"),
       link: ROUTES.MEDICAL_CONDITIONS,
     },
     {
       name: "Medical Equipments",
       count: "14",
-      icon: require("@/assets/images/allergies.png"),
+      icon: require("@/assets/icons/medical-equipment.png"),
       link: ROUTES.MEDICAL_EQUIPMENTS,
     },
     {
       name: "High level Goals",
       count: "7",
-      icon: require("@/assets/images/medications.png"),
+      icon: require("@/assets/icons/high-level-goals.png"),
       link: ROUTES.HIGH_LEVEL_GOALS,
     },
 
-    {
-      name: "Hospitalization",
-      count: "",
-      icon: require("@/assets/images/hospitalization.png"),
-      link: ROUTES.SNAPSHOT,
-    },
+    
   ];
 
   return (
