@@ -12,19 +12,19 @@ function medicalHistory() {
     {
       name: "Hospitalization",
       count: "3",
-      icon: require("@/assets/images/medicalOverview.png"),
+      icon: require("@/assets/icons/snapshot.png"),
       link: ROUTES.HOSPITALIZATION,
     },
     {
       name: "Surgeries And Procedures ",
       count: "2",
-      icon: require("@/assets/images/emergencyCare.png"),
+      icon: require("@/assets/icons/snapshot.png"),
       link: ROUTES.SURGERIES_AND_PROCEDURES,
     },
     {
       name: "Post Discharge Instructions",
       count: "14",
-      icon: require("@/assets/images/allergies.png"),
+      icon: require("@/assets/icons/snapshot.png"),
       link: ROUTES.POST_DISCHARGE_INSTRUCTIONS,
     },
     
