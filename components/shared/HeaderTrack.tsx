@@ -12,7 +12,7 @@ interface HeaderProps {
 
 const HeaderTrack: React.FC<HeaderProps> = ({
   title,
-  showBackButton = true,
+  showBackButton = false,
   onBackPress,
 }) => {
   const router = useRouter();
@@ -22,29 +22,35 @@ const HeaderTrack: React.FC<HeaderProps> = ({
       style={{ backgroundColor: palette.primary }}
       className="py-3 flex-row items-center px-4"
     >
-      {showBackButton ? (
-        <TouchableOpacity
-          onPress={onBackPress ?? (() => router.back())}
-          className="p-2"
-        >
-          <ChevronLeft color="white" size={24} />
-        </TouchableOpacity>
-      ) : (
-        <View className="p-2" />
-      )}
+      <View style={{ width: 80, alignItems: "flex-start" }}>
+        {showBackButton ? (
+          <TouchableOpacity
+            onPress={onBackPress ?? (() => router.back())}
+            className="p-2"
+          >
+            <ChevronLeft color="white" size={24} />
+          </TouchableOpacity>
+        ) : (
+          <View className="p-2" />
+        )}
+      </View>
 
       <Text className="text-xl text-white font-bold flex-1 text-center">
         {title}
       </Text>
 
-      <TouchableOpacity
-        onPress={() => router.push("/home/track/addItem" as Route)}
-        className=""
-      >
-        <View className="bg-white px-3 py-2 rounded-md">
-          <Text style={{ color: "green", fontWeight: "bold" }}>Add Item</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={{ maxWidth: 110, alignItems: "flex-end" }}>
+        <TouchableOpacity
+          onPress={() => router.push("/home/track/addItem" as Route)}
+          className=""
+        >
+          <View className="bg-white px-4 py-2 rounded-md">
+            <Text style={{ color: palette.primary, fontWeight: "bold" }}>
+              Add Item
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

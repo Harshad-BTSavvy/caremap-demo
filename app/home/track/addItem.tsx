@@ -6,6 +6,8 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { TouchableOpacity, FlatList } from "react-native";
 import { useSelectedItems } from "@/context/TrackContext";
+import { CheckIcon, Icon } from "@/components/ui/icon";
+import palette from "@/utils/theme/color";
 
 const groupedItems = [
   {
@@ -72,7 +74,12 @@ const AddItem = () => {
         {groupedItems.map((group) => (
           <View key={group.title} style={{ marginBottom: 24 }}>
             <Text
-              style={{ fontWeight: "bold", fontSize: 16, marginBottom: 12 }}
+              style={{
+                fontWeight: "bold",
+                fontSize: 16,
+                marginBottom: 12,
+                color: palette.heading,
+              }}
             >
               {group.title}
             </Text>
@@ -88,7 +95,7 @@ const AddItem = () => {
                   key={item}
                   onPress={() => toggleSelect(group.title, item)}
                   style={{
-                    backgroundColor: isSelected ? "#e0f7fa" : "#f2f2f2",
+                    backgroundColor: isSelected ? "#d8f6fc" : "#E6EBEB",
                     borderColor: isSelected ? "#00bcd4" : "#e0e0e0",
                     borderWidth: 1,
                     borderRadius: 24,
@@ -102,7 +109,11 @@ const AddItem = () => {
                 >
                   <Text style={{ color: "#333", fontSize: 15 }}>{item}</Text>
                   {isSelected && (
-                    <Text style={{ fontSize: 18, color: "#00bcd4" }}>✓</Text>
+                    <Icon
+                      as={CheckIcon}
+                      size="xl"
+                      style={{ color: palette.primary }}
+                    />
                   )}
                 </TouchableOpacity>
               );
@@ -112,11 +123,11 @@ const AddItem = () => {
         <TouchableOpacity
           onPress={handleSave}
           style={{
-            backgroundColor: "#00bcd4",
+            backgroundColor: palette.primary,
             borderRadius: 8,
-            paddingVertical: 14,
+            paddingVertical: 10,
             alignItems: "center",
-            marginTop: 10,
+            // marginTop: 10,
           }}
         >
           <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
