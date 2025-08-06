@@ -113,7 +113,7 @@ export default function MedicationsScreen() {
           style={{ color: palette.heading }}
           className="text-lg font-semibold mb-2"
         >
-          Medications (linked Health System)
+          Medications (Linked Health System)
         </Text>
         <Text className="text-gray-500 mb-3">
           Select ones to review with your care team{" "}
