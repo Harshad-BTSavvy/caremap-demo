@@ -1,14 +1,9 @@
-import palette from "@/utils/theme/color";
-import { View, Text, TouchableOpacity } from "react-native";
 import HeaderTrack from "@/components/shared/HeaderTrack";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelectedItems } from "@/context/TrackContext";
-import TrackCard from "./components/TrackCard";
+import TrackCard from "./trackComponents/TrackCard";
 function TrackScreen() {
-  const { selected } = useSelectedItems();
-  console.log(selected);
   return (
-    <SafeAreaView>
+    <SafeAreaView className="bg-white flex-1">
       <HeaderTrack title="Track" />
       <TrackCard />
     </SafeAreaView>

@@ -1,13 +1,20 @@
 import React, { createContext, useContext, useState } from "react";
 
-type SelectedGroup = {
+export interface TrackItem {
+  id: number;
+  category_id: number;
+  name: string;
+}
+
+export interface TrackCategory {
+  id: number;
   title: string;
-  data: string[];
-};
+  trackItemData: TrackItem[];
+}
 
 type SelectedItemsContextType = {
-  selected: SelectedGroup[];
-  setSelected: React.Dispatch<React.SetStateAction<SelectedGroup[]>>;
+  selected: TrackCategory[];
+  setSelected: React.Dispatch<React.SetStateAction<TrackCategory[]>>;
 };
 
 const SelectedItemsContext = createContext<
@@ -19,7 +26,7 @@ export const SelectedItemsProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [selected, setSelected] = useState<SelectedGroup[]>([]);
+  const [selected, setSelected] = useState<TrackCategory[]>([]);
   return (
     <SelectedItemsContext.Provider value={{ selected, setSelected }}>
       {children}
