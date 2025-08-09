@@ -1,13 +1,13 @@
-import { SelectedItemsProvider } from "@/context/TrackContext";
+import { TrackContextProvider } from "@/context/TrackContext";
 import { Stack } from "expo-router";
 
 const StackLayout = () => {
   return (
-    <SelectedItemsProvider>
+    <TrackContextProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-    </SelectedItemsProvider>
+    </TrackContextProvider>
   );
 };
 export default StackLayout;

@@ -5,40 +5,71 @@ import Header from "@/components/shared/Header";
 import { useRouter } from "expo-router";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import {
-  TrackCategory,
-  TrackItem,
+  TrackCategoryWithSelectableItems,
   useSelectedItems,
 } from "@/context/TrackContext";
 import { CheckIcon, Icon } from "@/components/ui/icon";
 import palette from "@/utils/theme/color";
 
-const trackCategory: TrackCategory[] = [
+// Sample data using TrackCategoryWithSelectableItems
+const sampleData: TrackCategoryWithSelectableItems[] = [
   {
-    id: 1,
-    title: "Meds and Treatment",
-    trackItemData: [
-      { id: 101, category_id: 1, name: "Emergency Medication" },
-      { id: 102, category_id: 1, name: "Home Spirometry use" },
-      { id: 103, category_id: 1, name: "Airway clearance treatment" },
-      { id: 104, category_id: 1, name: "Transplant medication adherence" },
-      { id: 105, category_id: 1, name: "Medication Tracking" },
+    category: {
+      id: 1,
+      name: "Meds and Treatment",
+    },
+    items: [
+      {
+        item: { id: 101, category_id: 1, name: "Emergency Medication" },
+        selected: false,
+      },
+      {
+        item: { id: 102, category_id: 1, name: "Home Spirometry use" },
+        selected: false,
+      },
+      {
+        item: { id: 103, category_id: 1, name: "Airway clearance treatment" },
+        selected: false,
+      },
+      {
+        item: {
+          id: 104,
+          category_id: 1,
+          name: "Transplant medication adherence",
+        },
+        selected: false,
+      },
+      {
+        item: { id: 105, category_id: 1, name: "Medication Tracking" },
+        selected: false,
+      },
     ],
   },
   {
-    id: 2,
-    title: "Major Events",
-    trackItemData: [
-      { id: 201, category_id: 2, name: "Sick Visits" },
-      { id: 202, category_id: 2, name: "Falls" },
-      { id: 203, category_id: 2, name: "Work/School absences" },
+    category: {
+      id: 2,
+      name: "Major Events",
+    },
+    items: [
+      {
+        item: { id: 201, category_id: 2, name: "Sick Visits" },
+        selected: false,
+      },
+      { item: { id: 202, category_id: 2, name: "Falls" }, selected: false },
+      {
+        item: { id: 203, category_id: 2, name: "Work/School absences" },
+        selected: false,
+      },
     ],
   },
   {
-    id: 3,
-    title: "Physical Symptoms",
-    trackItemData: [
-      { id: 301, category_id: 3, name: "Pain" },
-      { id: 302, category_id: 3, name: "Cough" },
+    category: {
+      id: 3,
+      name: "Physical Symptoms",
+    },
+    items: [
+      { item: { id: 301, category_id: 3, name: "Pain" }, selected: false },
+      { item: { id: 302, category_id: 3, name: "Cough" }, selected: false },
     ],
   },
 ];
@@ -46,43 +77,60 @@ const trackCategory: TrackCategory[] = [
 export default function AddItem() {
   const router = useRouter();
   const { selected, setSelected } = useSelectedItems();
-  const [localSelected, setLocalSelected] = useState<TrackCategory[]>([]);
+  const [categories, setCategories] = useState<
+    TrackCategoryWithSelectableItems[]
+  >([]);
 
+  // Sync local state with context or fallback to default data
   useEffect(() => {
-    setLocalSelected(selected);
-  }, []);
-
-  // Toggle selection of an item in a group
-  const toggleSelect = (category: TrackCategory, item: TrackItem) => {
-    setLocalSelected((prev) => {
-      const existingGroup = prev.find((g) => g.id === category.id);
-
-      if (existingGroup) {
-        const isItemSelected = existingGroup.trackItemData.some(
-          (i) => i.id === item.id
+    if (selected && selected.length > 0) {
+      // Merge selected state into the default structure to preserve unselected items
+      const merged = sampleData.map((cat) => {
+        const selectedCat = selected.find(
+          (s) => s.category.id === cat.category.id
         );
-        const updatedGroupData = isItemSelected
-          ? existingGroup.trackItemData.filter((i) => i.id !== item.id)
-          : [...existingGroup.trackItemData, item];
+        if (!selectedCat) return cat;
+        return {
+          ...cat,
+          items: cat.items.map((item) => {
+            const selItem = selectedCat.items.find(
+              (si) => si.item.id === item.item.id
+            );
+            return selItem ? { ...item, selected: selItem.selected } : item;
+          }),
+        };
+      });
+      setCategories(merged);
+    } else {
+      setCategories(sampleData);
+    }
+  }, [selected]);
 
-        if (updatedGroupData.length === 0) {
-          return prev.filter((g) => g.id !== category.id);
-        }
-
-        return prev.map((g) =>
-          g.id === category.id ? { ...g, trackItemData: updatedGroupData } : g
-        );
-      } else {
-        return [
-          ...prev,
-          { id: category.id, title: category.title, trackItemData: [item] },
-        ];
-      }
-    });
+  // Toggle selection of an item
+  const toggleSelect = (categoryIndex: number, itemIdx: number) => {
+    setCategories((prev) =>
+      prev.map((cat, cIdx) => {
+        return cIdx === categoryIndex
+          ? {
+              ...cat,
+              items: cat.items.map((itm, iIdx) =>
+                iIdx === itemIdx ? { ...itm, selected: !itm.selected } : itm
+              ),
+            }
+          : cat;
+      })
+    );
   };
 
+  // On save, only keep categories with at least one selected item
   const handleSave = () => {
-    setSelected(localSelected);
+    const selectedOnly = categories
+      .map((cat) => ({
+        ...cat,
+        items: cat.items.filter((itm) => itm.selected),
+      }))
+      .filter((cat) => cat.items.length > 0);
+    setSelected(selectedOnly);
     router.push("/home/track");
   };
 
@@ -90,51 +138,39 @@ export default function AddItem() {
     <SafeAreaView className="bg-white">
       <Header title="Select care items to track" />
       <ScrollView contentContainerStyle={styles.containerStyle}>
-        {trackCategory.map((category) => (
-          <View key={category.id} className="mb-6">
+        {categories.map((category, catIdx) => (
+          <View key={category.category.id} className="mb-6">
             <Text
               className="font-bold text-xl mb-3"
-              style={{
-                color: palette.heading,
-              }}
+              style={{ color: palette.heading }}
             >
-              {category.title}
+              {category.category.name}
             </Text>
-            {category.trackItemData.map((item) => {
-              const groupSelected = localSelected.find(
-                (g) => g.id === category.id
-              );
-              const isSelected = groupSelected
-                ? groupSelected.trackItemData.some((i) => i.id === item.id)
-                : false;
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  onPress={() => toggleSelect(category, item)}
-                  style={[
-                    styles.touchableItem,
-                    isSelected ? styles.selectedItem : styles.unselectedItem,
-                  ]}
-                >
-                  <Text className="text-[15px]">{item.name}</Text>
-                  {isSelected && (
-                    <Icon
-                      as={CheckIcon}
-                      size="xl"
-                      style={{ color: palette.primary }}
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
+            {category.items.map((itm, itemIdx) => (
+              <TouchableOpacity
+                key={itm.item.id}
+                onPress={() => toggleSelect(catIdx, itemIdx)}
+                style={[
+                  styles.touchableItem,
+                  itm.selected ? styles.selectedItem : styles.unselectedItem,
+                ]}
+              >
+                <Text className="text-[15px]">{itm.item.name}</Text>
+                {itm.selected && (
+                  <Icon
+                    as={CheckIcon}
+                    size="xl"
+                    style={{ color: palette.primary }}
+                  />
+                )}
+              </TouchableOpacity>
+            ))}
           </View>
         ))}
         <TouchableOpacity
           onPress={handleSave}
           className="rounded-lg py-3 items-center"
-          style={{
-            backgroundColor: palette.primary,
-          }}
+          style={{ backgroundColor: palette.primary }}
         >
           <Text className="text-white font-bold text-[16px]">Save</Text>
         </TouchableOpacity>
@@ -169,29 +205,3 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
 });
-
-// const toggleSelect = (category: TrackCategory, item: TrackItem) => {
-//   setLocalSelected((prev) => {
-//     const groupIndex = prev.findIndex((g) => g.id === category.id);
-//     if (groupIndex > -1) {
-//       const groupObj = prev[groupIndex];
-//       const alreadySelected = groupObj.data.some((i) => i.id === item.id);
-//       const newData = alreadySelected
-//         ? groupObj.data.filter((i) => i.id !== item.id)
-//         : [...groupObj.data, item];
-//       const newGroup = { ...groupObj, data: newData };
-//       const newSelected = [...prev];
-//       newSelected[groupIndex] = newGroup;
-//       // Remove group if no items selected
-//       return newGroup.data.length === 0
-//         ? newSelected.filter((_, idx) => idx !== groupIndex)
-//         : newSelected;
-//     } else {
-//       // Add new group
-//       return [
-//         ...prev,
-//         { id: category.id, title: category.title, data: [item] },
-//       ];
-//     }
-//   });
-// };
