@@ -155,7 +155,7 @@ export default function HealthProfile() {
                 : "Not set"}
             </Text>
             <Text className="text-white">
-              Weight: {patient?.weight ? `${patient.weight} kg` : "Not set"}
+              Weight: {patient?.weight ? `${patient.weight} lb` : "Not set"}
             </Text>
           </View>
 
