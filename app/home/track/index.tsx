@@ -67,12 +67,10 @@ export default function TrackScreen() {
       <Header
         title="Track"
         right={
-          <TouchableOpacity onPress={handleAddItem}>
-            <View className="bg-white px-3 py-1.5 rounded-lg">
-              <Text className="font-bold" style={{ color: palette.primary }}>
-                Add Item
-              </Text>
-            </View>
+          <TouchableOpacity onPress={handleAddItem} className="px-2">
+            <Text className="text-white font-medium whitespace-nowrap">
+              Add item
+            </Text>
           </TouchableOpacity>
         }
       />

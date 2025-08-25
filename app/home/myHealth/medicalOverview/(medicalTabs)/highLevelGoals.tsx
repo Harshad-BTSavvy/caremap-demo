@@ -23,6 +23,7 @@ import ActionPopover from "@/components/shared/ActionPopover";
 import { CustomAlertDialog } from "@/components/shared/CustomAlertDialog";
 import palette from "@/utils/theme/color";
 import { useCustomToast } from "@/components/shared/useCustomToast";
+import { router } from "expo-router";
 
 const linkedGoals = [
   "Establish a consistent sleep schedule for better energy and recovery.",
@@ -144,7 +145,13 @@ export default function HighLevelGoals() {
   return (
     <SafeAreaView className="flex-1 bg-white ">
       {/* Header */}
-      <Header title="High level goals" />
+      <Header title="High level goals" 
+      right={
+                      <TouchableOpacity onPress={() => router.back()}>
+                        <Text className="text-white font-medium">Cancel</Text>
+                      </TouchableOpacity>
+                    }
+      />
 
       <View className="px-6 pt-4 flex-1">
         {/* Linked Health System */}
@@ -345,7 +352,13 @@ function AddYourGoalsPage({
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <Header title="High level goals" onBackPress={onClose} />
+      <Header title="High level goals"
+      right={
+                      <TouchableOpacity onPress={() => router.back()}>
+                        <Text className="text-white font-medium">Cancel</Text>
+                      </TouchableOpacity>
+                    }
+                     onBackPress={onClose} />
 
       <View className="px-6 py-8">
         {/* Heading */}

@@ -25,6 +25,7 @@ import {
   updatePatientMedication,
   deletePatientMedication,
 } from "@/services/core/PatientMedicationService";
+import { router } from "expo-router";
 
 export default function MedicationsScreen() {
   const { patient } = useContext(PatientContext);
@@ -106,7 +107,13 @@ export default function MedicationsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header title="Medications" />
+      <Header title="Medications"
+      right={
+                      <TouchableOpacity onPress={() => router.back()}>
+                        <Text className="text-white font-medium">Cancel</Text>
+                      </TouchableOpacity>
+                    }
+                     />
 
       <View className="p-4 bg-white flex-1">
           <Text

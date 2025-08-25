@@ -22,6 +22,7 @@ import Header from "@/components/shared/Header";
 import ActionPopover from "@/components/shared/ActionPopover";
 import { useCustomToast } from "@/components/shared/useCustomToast";
 import { PatientAllergy } from "@/services/database/migrations/v1/schema_v1";
+import { router } from "expo-router";
 
 export default function Allergies() {
   const { patient } = useContext(PatientContext);
@@ -133,7 +134,12 @@ export default function Allergies() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <Header title="Allergies" />
+      <Header title="Allergies" 
+       right={
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Text className="text-white font-medium">Cancel</Text>
+                </TouchableOpacity>
+              }/>
 
       <View className="px-6 pt-8 flex-1">
         <View>
@@ -282,7 +288,13 @@ function AddAllergyPage({
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView className="flex-1 bg-white">
         {/* Header */}
-        <Header title="Allergies" onBackPress={onClose} />
+        <Header title="Allergies"
+         right={
+                  <TouchableOpacity onPress={() => router.back()}>
+                    <Text className="text-white font-medium">Cancel</Text>
+                  </TouchableOpacity>
+                }
+                 onBackPress={onClose} />
 
         <View className="px-6 py-8">
           <Text

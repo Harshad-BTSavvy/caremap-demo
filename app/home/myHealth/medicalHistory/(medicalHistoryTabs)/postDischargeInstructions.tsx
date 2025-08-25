@@ -26,6 +26,7 @@ import { DischargeInstruction } from "@/services/database/migrations/v1/schema_v
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { CalendarDaysIcon, Icon } from "@/components/ui/icon";
 import { KeyboardAvoidingView, Platform } from "react-native";
+import { router } from "expo-router";
 
 export default function PostDischargeInstructions() {
   const { patient } = useContext(PatientContext);
@@ -120,7 +121,13 @@ export default function PostDischargeInstructions() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <Header title="Post Discharge Instruction" />
+      <Header title="Post Discharge Instruction"
+       right={
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Text className="text-white font-medium">Cancel</Text>
+                </TouchableOpacity>
+              }
+               />
 
       <View className="px-6 pt-8 flex-1">
         <View className="flex-1">
