@@ -25,6 +25,7 @@ import {
   getPatientEmergencyCaresByPatientId,
   updatePatientEmergencyCare,
 } from "@/services/core/PatientEmergencyCareService";
+import { router } from "expo-router";
 
 export default function EmergencyCareScreen() {
   const { patient } = useContext(PatientContext);
@@ -109,7 +110,14 @@ export default function EmergencyCareScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header title="Emergency Care" />
+      <Header title="Emergency Care"
+      
+       right={
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Text className="text-white font-medium">Cancel</Text>
+                </TouchableOpacity>
+              }
+              />
 
       <View className="p-4 bg-white flex-1">
         <Text

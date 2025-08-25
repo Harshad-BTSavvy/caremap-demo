@@ -24,6 +24,7 @@ import { useCustomToast } from "@/components/shared/useCustomToast";
 import { PatientNote } from "@/services/database/migrations/v1/schema_v1";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { CalendarDaysIcon, Icon } from "@/components/ui/icon";
+import { router } from "expo-router";
 
 export default function Notes() {
   const { patient } = useContext(PatientContext);
@@ -114,7 +115,13 @@ export default function Notes() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <Header title="Notes" />
+      <Header title="Notes"
+      right={
+                      <TouchableOpacity onPress={() => router.back()}>
+                        <Text className="text-white font-medium">Cancel</Text>
+                      </TouchableOpacity>
+                    }
+                     />
 
       <View className="px-6 pt-8 flex-1">
         {/* Heading*/}

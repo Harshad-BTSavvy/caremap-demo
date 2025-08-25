@@ -25,6 +25,7 @@ import {
   updatePatientEquipment,
 } from "@/services/core/PatientEquipmentService";
 import { useCustomToast } from "@/components/shared/useCustomToast";
+import { router } from "expo-router";
 
 export default function MedicalEquipmentScreen() {
   const { patient } = useContext(PatientContext);
@@ -108,7 +109,12 @@ export default function MedicalEquipmentScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header title="Medical Equipments" />
+      <Header title="Medical Equipments" 
+      right={
+                      <TouchableOpacity onPress={() => router.back()}>
+                        <Text className="text-white font-medium">Cancel</Text>
+                      </TouchableOpacity>
+                    } />
       {/* <View className="p-4 bg-white flex-1">
         <Text
           style={{ color: palette.heading }}

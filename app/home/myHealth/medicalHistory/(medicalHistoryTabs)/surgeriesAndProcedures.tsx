@@ -26,6 +26,7 @@ import { SurgeryProcedure } from "@/services/database/migrations/v1/schema_v1";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { CalendarDaysIcon, Icon } from "@/components/ui/icon";
 import { KeyboardAvoidingView, Platform } from "react-native";
+import { router } from "expo-router";
 
 export default function SurgeriesProcedures() {
   const { patient } = useContext(PatientContext);
@@ -127,7 +128,12 @@ export default function SurgeriesProcedures() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <Header title="Surgeries/Procedure" />
+      <Header title="Surgeries/Procedure"  right={
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Text className="text-white font-medium">Cancel</Text>
+                </TouchableOpacity>
+              }
+              />
 
       <View className="px-6 pt-8 flex-1">
         <View className="flex-1">
@@ -387,7 +393,13 @@ function AddUpdateFormPage({
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView className="flex-1 bg-white">
         {/* Header */}
-        <Header title="Surgeries/Procedure" onBackPress={onClose} />
+        <Header title="Surgeries/Procedure"
+         right={
+                  <TouchableOpacity onPress={() => router.back()}>
+                    <Text className="text-white font-medium">Cancel</Text>
+                  </TouchableOpacity>
+                }
+                 onBackPress={onClose} />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
