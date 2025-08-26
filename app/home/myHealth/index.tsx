@@ -134,16 +134,16 @@ export default function HealthProfile() {
           </Avatar>
 
           <View >
-            <Text className="text-lg text-white font-semibold">
+            <Text className="text-xl text-white font-semibold">
               {`${patient?.first_name} ${patient?.last_name}`}
             </Text>
-            <Text className="text-white">
+            <Text className="text-white  font-semibold">
               Age:{" "}
               {calculateAge(patient?.date_of_birth)
                 ? `${calculateAge(patient?.date_of_birth)} years`
                 : "Not set"}
             </Text>
-            <Text className="text-white">
+            <Text className="text-white  font-semibold">
               Weight:{" "}
               {patient?.weight
                 ? `${patient.weight} ${patient.weight_unit ?? ""}`
