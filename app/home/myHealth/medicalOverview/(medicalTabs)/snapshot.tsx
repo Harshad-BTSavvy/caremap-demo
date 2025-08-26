@@ -105,7 +105,7 @@ const isDisabled = patientOverview.trim() === "" && healthIssues.trim() === "";
           isDisabled={false}
           isInvalid={false}
           isReadOnly={false}
-          className="mb-6 border border-gray-300"
+          className="mb-6 border border-gray-300 h-60"
         >
           <TextareaInput
             value={patientOverview}
@@ -131,7 +131,7 @@ const isDisabled = patientOverview.trim() === "" && healthIssues.trim() === "";
           isDisabled={false}
           isInvalid={false}
           isReadOnly={false}
-          className="mb-6 border border-gray-300"
+          className="mb-6 border border-gray-300 h-60"
         >
           <TextareaInput
             value={healthIssues}

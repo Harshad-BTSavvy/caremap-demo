@@ -293,7 +293,7 @@ function AddNotesPage({
 
           {/* Enter Topic */}
           <View className="mb-4">
-            <Text className="text-gray-600 text-sm mb-2">Enter Topic</Text>
+            <Text className="text-gray-600 text-base mb-2">Enter Topic</Text>
             <TextInput
               value={noteTopic}
               onChangeText={setNoteTopic}
@@ -307,7 +307,7 @@ function AddNotesPage({
 
           {/* Reminder Date */}
           <View className="mb-4">
-            <Text className="text-gray-600 text-sm mb-2">Reminder Date</Text>
+            <Text className="text-gray-600 text-base mb-2">Reminder Date</Text>
             <TouchableOpacity
               className="border border-gray-300 rounded-md px-3"
               onPress={() => setShowDatePicker(true)}
@@ -336,7 +336,7 @@ function AddNotesPage({
           </View>
 
           {/* Details */}
-          <Text className="text-gray-500 mb-2 text-sm">Details</Text>
+          <Text className="text-gray-500 mb-2 text-base">Details</Text>
           <Textarea
             size="md"
             isReadOnly={false}

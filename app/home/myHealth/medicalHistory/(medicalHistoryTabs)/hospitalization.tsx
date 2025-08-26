@@ -313,7 +313,7 @@ function HospitalizationForm({
           </Text>
 
           <View className="mb-4">
-            <Text className="text-sm mb-1 text-gray-600">
+            <Text className="text-base mb-1 text-gray-600">
               Date of Admission
             </Text>
             <TouchableOpacity
@@ -337,7 +337,7 @@ function HospitalizationForm({
           </View>
 
           <View className="mb-4">
-            <Text className="text-sm mb-1 text-gray-600">
+            <Text className="text-base mb-1 text-gray-600">
               Date of Discharge
             </Text>
             <TouchableOpacity
@@ -371,7 +371,7 @@ function HospitalizationForm({
             }
           />
 
-          <Text className="text-sm mb-1 text-gray-600 mt-2">Description</Text>
+          <Text className="text-base mb-1 text-gray-600 mt-2">Description</Text>
           <TextInput
             className="border border-gray-300 rounded-lg p-3 mb-4"
             placeholder="Enter description"

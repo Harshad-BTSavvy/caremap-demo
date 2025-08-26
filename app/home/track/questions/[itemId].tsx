@@ -201,7 +201,7 @@ export default function QuestionFlowScreen() {
             contentContainerStyle={{ padding: 20, paddingBottom: 100 }} // extra bottom padding so content doesn't hide under buttons
           >
             {currentQuestion.instructions && (
-              <Text className="text-sm text-gray-600 mb-2">
+              <Text className="text-base text-gray-600 mb-2">
                 {currentQuestion.instructions}
               </Text>
             )}

@@ -19,9 +19,9 @@ import { useCustomToast } from "@/components/shared/useCustomToast";
 import { PatientCondition } from "@/services/database/migrations/v1/schema_v1";
 import { router } from "expo-router";
 
-const linkedHealthSystem = [
-  "Attention Deficient and Hyperactivity Disorder (ADHD)",
-  "Irritable Bowel Syndrome (IBS)",
+const linkedHealthSystem : string[]= [
+  // "Attention Deficient and Hyperactivity Disorder (ADHD)",
+  // "Irritable Bowel Syndrome (IBS)",
 ];
 
 export default function MedicalConditions() {

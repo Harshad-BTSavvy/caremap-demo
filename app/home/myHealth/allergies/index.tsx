@@ -306,7 +306,7 @@ function AddAllergyPage({
 
           {/* Enter Topic */}
           <View className="mb-4">
-            <Text className="text-gray-600 text-sm mb-2">Enter Topic</Text>
+            <Text className="text-gray-600 text-base mb-2">Enter Topic</Text>
             <TextInput
               value={topic}
               onChangeText={setTopic}
@@ -319,7 +319,7 @@ function AddAllergyPage({
           </View>
 
           {/* Details */}
-          <Text className="text-gray-500 mb-2 text-sm">Details</Text>
+          <Text className="text-gray-500 mb-2 text-base">Details</Text>
           <Textarea
             size="md"
             isReadOnly={false}
@@ -336,7 +336,7 @@ function AddAllergyPage({
           </Textarea>
 
           {/* Severity */}
-          <Text className="text-gray-600 text-sm mb-2 mt-4">Severity</Text>
+          <Text className="text-gray-600 text-base mb-2 mt-4">Severity</Text>
           <View style={{ width: "70%", alignSelf: "flex-start" }}>
             <View
               className="flex-row border rounded-lg overflow-hidden mb-2"

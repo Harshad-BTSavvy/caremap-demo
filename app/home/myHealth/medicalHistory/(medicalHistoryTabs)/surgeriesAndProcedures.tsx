@@ -424,7 +424,7 @@ function AddUpdateFormPage({
               </Text>
               {/* Prodedure Name */}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">
+                <Text className="text-gray-600 text-base mb-1">
                   Procedure Name
                 </Text>
                 <TextInput
@@ -440,7 +440,7 @@ function AddUpdateFormPage({
 
               {/* Facility Name */}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">
+                <Text className="text-gray-600 text-base mb-1">
                   Facility Name, City
                 </Text>
                 <TextInput
@@ -455,7 +455,7 @@ function AddUpdateFormPage({
               </View>
               {/* Complications */}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">
+                <Text className="text-gray-600 text-base mb-1">
                   Complications
                 </Text>
                 <TextInput
@@ -470,7 +470,7 @@ function AddUpdateFormPage({
               </View>
               {/* Surgeon name */}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">
+                <Text className="text-gray-600 text-base mb-1">
                   Surgeon's Name
                 </Text>
                 <TextInput
@@ -485,7 +485,7 @@ function AddUpdateFormPage({
               </View>
               {/* Date of Surgery*/}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">
+                <Text className="text-gray-600 text-base mb-1">
                   Date of Surgery
                 </Text>
                 <TouchableOpacity
@@ -515,7 +515,7 @@ function AddUpdateFormPage({
                 />
               </View>
               {/* Details */}
-              <Text className="text-gray-500 mb-1 text-sm">Description</Text>
+              <Text className="text-gray-500 mb-1 text-base">Description</Text>
               <Textarea
                 size="md"
                 isReadOnly={false}

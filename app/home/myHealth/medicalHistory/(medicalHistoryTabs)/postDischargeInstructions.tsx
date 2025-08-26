@@ -349,7 +349,7 @@ function AddUpdateFormPage({
               </Text>
               {/* Discharge summary */}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">Summary</Text>
+                <Text className="text-gray-600 text-base mb-1">Summary</Text>
                 <TextInput
                   value={dischargeSummary}
                   onChangeText={setDischargeSummary}
@@ -362,7 +362,7 @@ function AddUpdateFormPage({
               </View>
               {/* Date of discharge*/}
               <View className="mb-4">
-                <Text className="text-gray-600 text-sm mb-1">
+                <Text className="text-gray-600 text-base mb-1">
                   Date of discharge
                 </Text>
                 <TouchableOpacity
@@ -392,7 +392,7 @@ function AddUpdateFormPage({
                 />
               </View>
               {/* Details */}
-              <Text className="text-gray-500 mb-1 text-sm">Description</Text>
+              <Text className="text-gray-500 mb-1 text-base">Description</Text>
               <Textarea
                 size="md"
                 isReadOnly={false}

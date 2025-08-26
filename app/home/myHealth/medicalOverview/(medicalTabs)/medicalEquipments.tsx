@@ -133,7 +133,7 @@ export default function MedicalEquipmentScreen() {
                 <Text className="font-semibold text-base">
                   {item.equipment_name}
                 </Text>
-                <Text className="text-gray-500 text-sm mt-1">
+                <Text className="text-gray-500 text-base mt-1">
                   {item.equipment_description}
                 </Text>
               </View>
@@ -184,7 +184,7 @@ export default function MedicalEquipmentScreen() {
           <Text className="font-semibold text-base">
             {item.equipment_name}
           </Text>
-          <Text className="text-gray-500 text-sm mt-1">
+          <Text className="text-gray-500 text-base mt-1">
             {item.equipment_description}
           </Text>
         </View>
@@ -308,7 +308,7 @@ function MedicalEquipmentForm({
             {editingItem ? "Edit" : "Add"} Medical Equipment
           </Text>
 
-          <Text className="text-sm mb-1 text-gray-600">Equipment Name</Text>
+          <Text className="text-base mb-1 text-gray-600">Equipment Name</Text>
           <TextInput
             className="border border-gray-300 rounded-lg p-3 mb-4"
             placeholder="Enter equipment name"
@@ -316,7 +316,7 @@ function MedicalEquipmentForm({
             onChangeText={setName}
           />
 
-          <Text className="text-sm mb-1 text-gray-600">
+          <Text className="text-base mb-1 text-gray-600">
             Equipment Description
           </Text>
           <TextInput
