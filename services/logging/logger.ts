@@ -1,4 +1,4 @@
-import { DEBUG_ON } from "@/utils/config";
+import { DEBUG_ON, LOG_TRUNCATE_LIMIT } from "@/utils/config";
 
 interface Logger {
   debug: (message: string, ...optionalParams: any[]) => void;
@@ -6,7 +6,7 @@ interface Logger {
 }
 
 // Helper function to truncate long strings in objects
-const truncateStrings = (obj: any, maxLength = 500): any => {
+const truncateStrings = (obj: any, maxLength = LOG_TRUNCATE_LIMIT): any => {
   if (obj == null) {
     return obj;
   } 
