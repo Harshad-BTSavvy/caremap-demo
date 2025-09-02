@@ -6,7 +6,7 @@ interface Logger {
 }
 
 // Helper function to truncate long strings in objects
-const truncateStrings = (obj: any, maxLength = 1000): any => {
+const truncateStrings = (obj: any, maxLength = 500): any => {
   if (obj == null) {
     return obj;
   } 
@@ -33,8 +33,7 @@ const truncateStrings = (obj: any, maxLength = 1000): any => {
 export const logger: Logger = {
   debug: (message: string, ...optionalParams: any[]) => {
     if (DEBUG_ON) {
-      const truncatedParams = optionalParams.map(param => truncateStrings(param));
-      console.debug(`${message}`, ...truncatedParams);
+      console.debug(`${message}`, ...optionalParams);
     }
   },
   debugTrunc: (message: string, obj: any) => {
