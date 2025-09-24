@@ -125,7 +125,7 @@ export default function AddItem() {
       initialCategoriesRef.current = selectableCategoriesRef.current;
 
       setRefreshData(true);
-      router.replace("/home/track");
+      router.navigate("/home/track");
     } finally {
       setIsLoading(false);
     }
@@ -154,21 +154,33 @@ export default function AddItem() {
               <TouchableOpacity
                 key={itemObj.item.id}
                 onPress={() => toggleSelect(categoryIndex, itemIndex)}
-                className={`flex-row items-center justify-between border rounded-xl py-3 px-4 mb-2 
-                  ${
-                    itemObj.selected
-                      ? "bg-cyan-100 border-cyan-400"
-                      : "bg-gray-100 border-gray-300"
-                  }`}
+                className={`flex-row items-center justify-between border rounded-xl py-3 px-4 mb-2
+    ${
+      itemObj.selected
+        ? "bg-cyan-100 border-cyan-400"
+        : "bg-gray-100 border-gray-300"
+    }
+  `}
               >
-                <Text className="text-[15px]">{itemObj.item.name}</Text>
-                {itemObj.selected && (
-                  <Icon
-                    as={CheckIcon}
-                    size="xl"
-                    style={{ color: palette.primary }}
-                  />
-                )}
+                {/* Left: item name */}
+                <Text className="text-[15px] flex-1">{itemObj.item.name}</Text>
+
+                {/* Right: frequency + check icon */}
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm text-gray-700">
+                    {itemObj.item.frequency}
+                  </Text>
+                  {itemObj.selected ? (
+                    <Icon
+                      as={CheckIcon}
+                      size="xl"
+                      style={{ color: palette.primary }}
+                    />
+                  ) : (
+                    // invisible placeholder to keep space fixed
+                    <View style={{ width: 24, height: 24 }} />
+                  )}
+                </View>
               </TouchableOpacity>
             ))}
           </View>
