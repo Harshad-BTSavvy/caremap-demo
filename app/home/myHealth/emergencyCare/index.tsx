@@ -27,6 +27,9 @@ import {
 } from "@/services/core/PatientEmergencyCareService";
 import { router } from "expo-router";
 import { CustomButton } from "@/components/shared/CustomButton";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
 
 export default function EmergencyCareScreen() {
   const { patient } = useContext(PatientContext);
@@ -110,7 +113,7 @@ export default function EmergencyCareScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Emergency Care"
         right={
@@ -121,22 +124,21 @@ export default function EmergencyCareScreen() {
       />
 
       <View className="px-5 pt-5 bg-white flex-1">
-        <Text
-          style={{ color: palette.heading }}
-          className="text-xl font-semibold mb-2"
-        >
-          Guidance in case of Emergency
-        </Text>
-        <Divider className="bg-gray-300" />
-        <Text className="text-gray-700 mt-3 mb-2 text-lg leading-5">
-          List specific guidance for others on what steps to take in response to
-          emergency care situations.
-        </Text>
-        <Text className="text-gray-500  mb-4">
+        <IconLabelHeading
+            icon={require("@/assets/images/emergencyCare.png")}
+            label="Guidance in case of Emergency"
+            subtitle="List specific guidance for others on what steps to take in response to
+          emergency care situations."
+            count={careList.length}
+          />
+
+        
+        
+        {/* <Text className="text-gray-500  mb-4">
           e.g. in the event of a severe allergic reaction give one 0.3 mg
           injection into the muscle of the thigh
-        </Text>
-        <Divider className="bg-gray-300" />
+        </Text> */}
+        {/* <Divider className="bg-gray-300" /> */}
         <FlatList
           className="mt-2"
           data={careList}
@@ -170,11 +172,14 @@ export default function EmergencyCareScreen() {
           }
         />
 
-        <Divider className="bg-gray-300 my-2" />
-        <CustomButton
+        <Divider className="bg-gray-300 mb-2" />
+        <View className="py-4">
+           <CustomButton
           title="Add emergency care"
           onPress={() => setShowForm(true)}
         />
+        </View>
+       
       </View>
 
       <CustomAlertDialog
@@ -233,7 +238,7 @@ function EmergencyCareForm({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Emergency Care"
         right={
@@ -256,38 +261,45 @@ function EmergencyCareForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
-            className="text-xl font-medium mb-3"
-            style={{ color: palette.heading }}
-          >
-            {editingItem ? "Update" : "Add"} Emergency Care
-          </Text>
 
-          <Text className="text-base mb-1 text-gray-600">
-            Emergency Care Name
-          </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter condition name"
+          <IconLabelHeading
+            icon={require("@/assets/images/allergies.png")}
+            label={editingItem ? "Update emergency care" : "Add emergency care"}
+            // subtitle="Please provide the details below"
+          />
+         
+
+
+ <CustomFormInput
+            className="mb-2"
+            label="Emergency care name"
             value={topic}
             onChangeText={setName}
+            placeholder="Enter condition name"
           />
+          
 
-          <Text className="text-base mb-1 text-gray-600">
-            Emergency Care Details
+<Text className="text-black mb-2 text-base">
+            Emergency care details
           </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter guidance steps"
-            value={details}
-            onChangeText={setDetails}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
+          <Textarea
+            size="md"
+            isReadOnly={false}
+            isInvalid={false}
+            isDisabled={false}
+            className="w-full"
+          >
+            <TextareaInput
+              placeholder="Enter guidance steps"
+              style={{ textAlignVertical: "top", fontSize: 16 }}
+              value={details}
+              onChangeText={setDetails}
+            />
+          </Textarea>
+          
         </ScrollView>
 
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingItem ? "Update" : "Add"}
             onPress={handleSave}

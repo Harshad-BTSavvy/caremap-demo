@@ -17,13 +17,16 @@ import { useContext, useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Grid, GridItem } from "@/components/ui/grid";
-import { initializeMockSession, isAndroid } from "@/android-bypass/google-auth-android";
+import {
+  initializeMockSession,
+  isAndroid,
+} from "@/android-bypass/google-auth-android";
 export default function HealthProfile() {
   const { user, setUserData } = useContext(UserContext);
   const { patient, setPatientData } = useContext(PatientContext);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
+  useEffect(() => {
     if (isAndroid) {
       logger.debug("Android? :", isAndroid);
       initializeMockSession(setUserData).finally(() => setLoading(false));
@@ -82,7 +85,7 @@ useEffect(() => {
     },
     {
       name: "Notes",
-      image: require("@/assets/images/hospitalization.png"),
+      image: require("@/assets/images/notes.png"),
       badge: 4,
       link: ROUTES.NOTES,
     },
@@ -98,20 +101,10 @@ useEffect(() => {
       badge: 4,
       link: ROUTES.HIGH_LEVEL_GOALS,
     },
-    // {
-    //   name: "Test 1",
-    //   image: require("@/assets/images/medicalOverview.png"),
-    //   badge: 6,
-    //   link: ROUTES.MEDICAL_OVERVIEW,
-    // },
-    // {
-    //   name: "Test 2",
-    //   image: require("@/assets/images/emergencyCare.png"),
-    //   badge: 9,
-    //   link: ROUTES.MEDICAL_OVERVIEW,
-    // },
+    
   ];
 
+  
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -131,56 +124,71 @@ useEffect(() => {
   const COLUMNS = 2 as const;
   const gridColsClass = "grid-cols-2"; // gluestack grid expects 1..12
   return (
-    <SafeAreaView className="flex-1 m-0 bg-white">
+    <SafeAreaView
+      edges={["right", "top", "left"]}
+      className="flex-1 m-0 bg-white"
+    >
       <View
         style={{ backgroundColor: palette.primary }}
-        className="pt-4 pb-6 px-6 "
+        className="pt-3 pb-4 px-6"
       >
-        <Text className="text-xl text-white font-bold text-center ">
-          My Health
-        </Text>
-
+        {/* Top row: Title + actions */}
         <View className="flex-row items-center justify-between">
-          <Avatar size="xl" className="border border-white shadow-md">
+          <Text className="text-2xl text-white font-semibold ml-2 tracking-wide">
+            My Health
+          </Text>
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              className="p-2 mr-"
+              onPress={() => router.push(ROUTES.EDIT_PROFILE)}
+              accessibilityLabel="Edit profile"
+            >
+              <Icon as={EditIcon} size="lg" className="text-white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="p-2 mr-1"
+              onPress={() => router.push(ROUTES.EDIT_PROFILE)}
+              accessibilityLabel="Share My Health"
+            >
+              <Icon as={ShareIcon} size="lg" className="text-white" />
+            </TouchableOpacity>
+          </View>
+        </View>
+ 
+        {/* User row: Avatar + details */}
+        <View className="mt-4 flex-row items-center">
+          <Avatar className="border border-white/60 bg-white/10 w-20 h-20">
             {patient?.profile_picture ? (
               <AvatarImage source={{ uri: patient.profile_picture }} />
             ) : (
-              <View className="w-full h-full items-center justify-center bg-gray-200 rounded-full">
-                <Icon as={User} size="xl" className="text-gray-500" />
+              <View className="w-full h-full items-center justify-center rounded-full">
+                <Icon as={User} className="text-white/90 w-9 h-9" />
               </View>
             )}
           </Avatar>
-
-          <View >
-            <Text className="text-xl text-white font-semibold">
-              {`${patient?.first_name} ${patient?.last_name}`}
+ 
+          <View className="ml-4 flex-1">
+            <Text
+              className="text-white text-xl font-semibold"
+              numberOfLines={1}
+            >
+              {`${patient?.first_name ?? ""} ${
+                patient?.last_name ?? ""
+              }`.trim() || "Your name"}
             </Text>
-            <Text className="text-white  font-semibold">
+ 
+            <Text className="text-white font-semibold mt-1">
               Age:{" "}
               {calculateAge(patient?.date_of_birth)
                 ? `${calculateAge(patient?.date_of_birth)} years`
                 : "Not set"}
             </Text>
-            <Text className="text-white  font-semibold">
+            <Text className="text-white font-semibold">
               Weight:{" "}
               {patient?.weight
                 ? `${patient.weight} ${patient.weight_unit ?? ""}`
                 : "Not set"}
             </Text>
-          </View>
-          <View className="flex-row items-center">
-            <TouchableOpacity
-              className="bg-white/20  rounded-full mx-1"
-              onPress={() => router.push(ROUTES.EDIT_PROFILE)}
-            >
-              <Icon as={EditIcon} size="lg" className="text-white m-2" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="bg-white/20  rounded-full mx-1"
-              onPress={() => router.push(ROUTES.EDIT_PROFILE)}
-            >
-              <Icon as={ShareIcon} size="lg" className="text-white m-2" />
-            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -194,35 +202,14 @@ useEffect(() => {
           <View className=" overflow-hidden bg-white">
             <Grid className="gap-0" _extra={{ className: gridColsClass }}>
               {medicalTiles.map((tile, index) => {
-                const row = Math.floor(index / COLUMNS);
-                const col = index % COLUMNS;
-
                 const isLastOdd =
                   medicalTiles.length % COLUMNS === 1 &&
                   index === medicalTiles.length - 1;
 
-                // Normal border rules
-                let cellBorders = [
-                  row > 0 ? "border-t border-gray-300" : "",
-                  col > 0 ? "border-l border-gray-300" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ");
-
-                // Special case: last odd full-width item
-                if (isLastOdd) {
-                  cellBorders = [
-                    row > 0 ? "border-t border-gray-300" : "",
-                    "border-l border-gray-300 border-r border-gray-300",
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
-                }
-
                 return (
                   <GridItem
                     key={tile.name + index}
-                    className={`items-stretch justify-stretch ${cellBorders}`}
+                    className={`items-stretch justify-stretch`}
                     _extra={{
                       className: isLastOdd ? "col-span-2" : "col-span-1",
                     }}
@@ -230,35 +217,35 @@ useEffect(() => {
                     <TouchableOpacity
                       activeOpacity={0.65}
                       onPress={() => router.push(tile.link as any)}
-                      // className="w-full items-center justify-center py-6 min-h-[132px]"
-                      className=" m-2 bg-white border border-gray-200 rounded-sm shadow-sm items-center justify-center min-h-[132px]"
+                      style={{
+                        margin: 8,
+                        backgroundColor: "white",
+                        borderRadius: 6,
+                        minHeight: 125,
+                        // ✅ Cross-platform shadow
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.35,
+                        shadowRadius: 3.84,
+                        elevation: 4,
+                      }}
+                      className="items-center justify-center"
                     >
                       <View className="relative">
                         <Image
                           source={tile.image}
-                          style={{ width: 59, height: 59 }}
+                          style={{ width: 50, height: 50 }}
                           resizeMode="contain"
                         />
-                        {/* 🔹 Optional Badge */}
-                        {/* {tile.badge ? (
-                          <View className="absolute -top-2 -right-2 bg-red-500 rounded-full px-2 py-1 shadow">
-                            <Text className="text-white text-xs font-bold">
-                              {tile.badge}
-                            </Text>
-                          </View>
-                        ) : null} */}
                       </View>
-                      {/* <View className="flex-row items-center mt-2">
-                        <Text className="text-base">{tile.name}</Text>
-                      </View> */}
+
                       <Text
-                      style={{ color: palette.heading }}
-                       className="mt-3 text-lg font-semibold text-center">
+                        style={{ color: palette.heading }}
+                        className="mt-3 text-lg font-semibold text-center"
+                      >
                         {tile.name}
                       </Text>
-                      
                     </TouchableOpacity>
-                    
                   </GridItem>
                 );
               })}

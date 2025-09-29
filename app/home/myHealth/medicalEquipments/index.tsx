@@ -27,6 +27,9 @@ import {
 import { useCustomToast } from "@/components/shared/useCustomToast";
 import { router } from "expo-router";
 import { CustomButton } from "@/components/shared/CustomButton";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
 
 export default function MedicalEquipmentScreen() {
   const { patient } = useContext(PatientContext);
@@ -108,7 +111,7 @@ export default function MedicalEquipmentScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Medical Equipments"
         right={
@@ -117,65 +120,18 @@ export default function MedicalEquipmentScreen() {
           </TouchableOpacity>
         }
       />
-      {/* <View className="p-4 bg-white flex-1">
-        <Text
-          style={{ color: palette.heading }}
-          className="text-lg font-semibold mb-2"
-        >
-          Enter any medical devices or equipment that you rely on for daily
-          living
-        </Text>
 
-        <View className="border-t border-gray-300 mb-4" />
-
-        {equipmentList.map((item) => (
-          <React.Fragment key={item.id}>
-            <View className="flex-row items-start border border-gray-300 rounded-xl p-4 mb-4">
-              <View className="ml-3 flex-1">
-                <Text className="font-semibold text-base">
-                  {item.equipment_name}
-                </Text>
-                <Text className="text-gray-500 text-base mt-1">
-                  {item.equipment_description}
-                </Text>
-              </View>
-
-              <ActionPopover
-                onEdit={() => {
-                  setEditingItem(item);
-                  setShowForm(true);
-                }}
-                onDelete={() => {
-                  setItemToDelete(item);
-                  setShowDialog(true);
-                }}
-              />
-            </View>
-          </React.Fragment>
-        ))}
-
-        <Divider className="bg-gray-300" />
-
-        <TouchableOpacity
-          style={{ backgroundColor: palette.primary }}
-          className="py-3 rounded-lg mt-2"
-          onPress={() => setShowForm(true)}
-        >
-          <Text className="text-white font-bold text-center">
-            Add medical equipment
-          </Text>
-        </TouchableOpacity>
-      </View> */}
       <View className="pt-5 px-5 bg-white flex-1">
-        <Text
-          style={{ color: palette.heading }}
-          className="text-xl font-semibold mb-2"
-        >
-          Enter any medical devices or equipment that you rely on for daily
-          living
-        </Text>
+        <IconLabelHeading
+          icon={require("@/assets/images/medical-equipment.png")}
+          label="
+          Essential medical equipment or devices"
+          subtitle="Your devices or equipment that you rely on for 
+          daily living"
+          count={equipmentList.length}
+        />
 
-        <View className="border-t border-gray-300 mb-4" />
+        {/* <View className="bmb-4" /> */}
 
         <FlatList
           data={equipmentList}
@@ -187,7 +143,7 @@ export default function MedicalEquipmentScreen() {
                 <Text className="font-semibold text-lg">
                   {item.equipment_name}
                 </Text>
-                <Text className="text-gray-500 text-lg mt-1">
+                <Text className="text-gray-700 text-balance mt-1">
                   {item.equipment_description}
                 </Text>
               </View>
@@ -211,21 +167,15 @@ export default function MedicalEquipmentScreen() {
           }
         />
 
-        <Divider className="bg-gray-300 mb-2" />
+        <Divider className="bg-gray-300 " />
 
-        {/* <TouchableOpacity
-          style={{ backgroundColor: palette.primary }}
-          className="py-3 rounded-lg mt-2"
-          onPress={() => setShowForm(true)}
-        >
-          <Text className="text-white font-bold text-center">
-            Add medical equipment
-          </Text>
-        </TouchableOpacity> */}
-        <CustomButton
-          title="Add medical equipment"
-          onPress={() => setShowForm(true)}
-        />
+        
+        <View className="py-5">
+          <CustomButton
+            title="Add medical equipment"
+            onPress={() => setShowForm(true)}
+          />
+        </View>
       </View>
 
       <CustomAlertDialog
@@ -289,7 +239,7 @@ function MedicalEquipmentForm({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Medical Equipments"
         right={
@@ -312,37 +262,42 @@ function MedicalEquipmentForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
-            className="text-xl font-medium mb-3"
-            style={{ color: palette.heading }}
-          >
-            {editingItem ? "Update" : "Add"} Medical Equipment
-          </Text>
+           <IconLabelHeading
+            icon={require("@/assets/images/medical-equipment.png")}
+            label={editingItem ? "Update Medical Equipment" : "Add Medical Equipment"}
+            subtitle="Please provide the details below"
+          />
 
-          <Text className="text-base mb-1 text-gray-600">Equipment Name</Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter equipment name"
+          
+
+          <CustomFormInput
+            className="mb-2"
+            label="Equipment Name"
             value={name}
             onChangeText={setName}
+            placeholder="Enter equipment name"
           />
 
-          <Text className="text-base mb-1 text-gray-600">
-            Equipment Description
-          </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter equipment description"
-            value={equipment_description}
-            onChangeText={setEquipmentDescription}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
+          {/* Details */}
+          <Text className=" mb-2 text-base">Equipment Description</Text>
+          <Textarea
+            size="md"
+            isReadOnly={false}
+            isInvalid={false}
+            isDisabled={false}
+            className="w-full"
+          >
+            <TextareaInput
+              placeholder="Enter equipment description"
+              style={{ textAlignVertical: "top", fontSize: 16 }}
+              value={equipment_description}
+              onChangeText={setEquipmentDescription}
+            />
+          </Textarea>
         </ScrollView>
 
         {/* Button */}
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingItem ? "Update" : "Save"}
             disabled={isSaveDisabled}
@@ -353,3 +308,23 @@ function MedicalEquipmentForm({
     </SafeAreaView>
   );
 }
+
+
+
+// Glucose meter
+
+// Thermometer
+
+// Oxygen concentrator
+
+// CPAP machine
+
+// Pulse oximeter
+
+// Insulin pump
+
+// Mobility aids (walker, cane)
+
+// Hearing aid
+
+// Wheelchair

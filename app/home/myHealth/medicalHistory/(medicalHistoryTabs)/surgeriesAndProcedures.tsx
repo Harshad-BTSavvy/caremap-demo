@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import {
   View,
@@ -29,6 +30,8 @@ import { logger } from "@/services/logging/logger";
 import { router } from "expo-router";
 import { CustomButton } from "@/components/shared/CustomButton";
 import { Divider } from "@/components/ui/divider";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
 
 export default function SurgeriesProcedures() {
   const { patient } = useContext(PatientContext);
@@ -129,7 +132,7 @@ export default function SurgeriesProcedures() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Surgeries/Procedure"
@@ -142,15 +145,14 @@ export default function SurgeriesProcedures() {
 
       <View className="px-5 pt-5 flex-1">
         <View className="flex-1">
-          {/* Heading*/}
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: palette.heading }}
-          >
-            Past surgeries/procedures
-          </Text>
+          <IconLabelHeading
+            icon={require("@/assets/images/allergies.png")}
+            label="Past surgeries and procedures"
+            subtitle="Details of your past surgeries and procedures."
+            count={patientSurgeries.length}
+          />
 
-          <Divider className="bg-gray-300 my-3" />
+          {/* <Divider className="bg-gray-300 my-3" /> */}
 
           <View className="flex-1">
             <FlatList
@@ -197,7 +199,7 @@ export default function SurgeriesProcedures() {
                           Procedure Name:
                         </Text>
                         <Text
-                          className="font-normal text-base leading-5 text-gray-600"
+                          className="font-normal text-base leading-5 text-gray-700"
                           style={{
                             flexShrink: 1,
                             // flexWrap: "wrap",
@@ -217,7 +219,7 @@ export default function SurgeriesProcedures() {
                             Facility:
                           </Text>
                           <Text
-                            className="font-normal text-base leading-5 text-gray-600"
+                            className="font-normal text-base leading-5 text-gray-700"
                             style={{
                               flexShrink: 1,
                               textAlign: "right",
@@ -235,7 +237,7 @@ export default function SurgeriesProcedures() {
                             Complications:
                           </Text>
                           <Text
-                            className="font-normal text-base leading-5 text-gray-600"
+                            className="font-normal text-base leading-5 text-gray-700"
                             style={{
                               flexShrink: 1,
                               textAlign: "right",
@@ -253,7 +255,7 @@ export default function SurgeriesProcedures() {
                             Surgeon’s Name:
                           </Text>
                           <Text
-                            className="font-normal text-base leading-5 text-gray-600"
+                            className="font-normal text-base leading-5 text-gray-700"
                             style={{
                               flexShrink: 1,
                               textAlign: "right",
@@ -270,7 +272,7 @@ export default function SurgeriesProcedures() {
                           Date of surgery:
                         </Text>
                         <Text
-                          className="font-normal text-base leading-5 text-gray-600"
+                          className="font-normal text-base leading-5 text-gray-700"
                           style={{
                             flexShrink: 1,
                             textAlign: "right",
@@ -290,7 +292,7 @@ export default function SurgeriesProcedures() {
                       </View>
                       {/* Details */}
                       {item.details ? (
-                        <Text className="text-base text-gray-500 leading-5">
+                        <Text className="text-base text-gray-700 leading-5">
                           {item.details}
                         </Text>
                       ) : null}
@@ -305,10 +307,12 @@ export default function SurgeriesProcedures() {
         <Divider className="bg-gray-300 mb-2" />
 
         {/* Add Button */}
-        <CustomButton
-          title="Add Surgery Details"
-          onPress={() => setShowForm(true)}
-        />
+        <View className="py-5">
+          <CustomButton
+            title="Add surgery details"
+            onPress={() => setShowForm(true)}
+          />
+        </View>
       </View>
 
       <CustomAlertDialog
@@ -389,7 +393,7 @@ function AddUpdateFormPage({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Surgeries/Procedure"
@@ -417,95 +421,66 @@ function AddUpdateFormPage({
           showsVerticalScrollIndicator={true}
         >
           <View className="flex-1">
-            <Text
-              className="text-lg font-medium mb-3"
-              style={{ color: palette.heading }}
-            >
-              {editingItem
-                ? "Update details of recent hospitalizations"
-                : "Enter details of recent hospitalizations"}
-            </Text>
+            <IconLabelHeading
+              icon={require("@/assets/images/allergies.png")}
+              label={
+                editingItem
+                  ? "Update surgery information"
+                  : "Add surgery information"
+              }
+              // subtitle="Please provide the details below"
+            />
+
             {/* Prodedure Name */}
-            <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">
-                Procedure Name *
-              </Text>
-              <TextInput
-                value={procedureName}
-                onChangeText={setProcedureName}
-                placeholder="Please Enter your topic here"
-                className="border border-gray-300 rounded-md px-3 py-3 text-base"
-                multiline
-                numberOfLines={2}
-                textAlignVertical="top"
-              />
-            </View>
+            <CustomFormInput
+              label="Procedure Name *"
+              value={procedureName}
+              onChangeText={setProcedureName}
+              placeholder="Enter procedure name"
+            />
 
             {/* Facility Name */}
-            <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">
-                Facility Name, City
-              </Text>
-              <TextInput
-                value={facilityName}
-                onChangeText={setFacilityName}
-                placeholder="Please Enter your topic here"
-                className="border border-gray-300 rounded-md px-3 py-3 text-base"
-                multiline
-                numberOfLines={2}
-                textAlignVertical="top"
-              />
-            </View>
+            <CustomFormInput
+              label="Facility"
+              value={facilityName}
+              onChangeText={setFacilityName}
+              placeholder="Enter facility name"
+            />
             {/* Complications */}
-            <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">
-                Complications
-              </Text>
-              <TextInput
-                value={complications}
-                onChangeText={setComplications}
-                placeholder="Please enter complications here"
-                className="border border-gray-300 rounded-md px-3 py-3 text-base"
-                multiline
-                numberOfLines={2}
-                textAlignVertical="top"
-              />
-            </View>
+            <CustomFormInput
+              label="Complications"
+              value={complications}
+              onChangeText={setComplications}
+              placeholder="Enter any complications"
+            />
             {/* Surgeon name */}
-            <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">
-                Surgeon's Name
-              </Text>
-              <TextInput
-                value={surgeonName}
-                onChangeText={setSurgeonName}
-                placeholder="Please Enter surgeon's name"
-                className="border border-gray-300 rounded-md px-3 py-3 text-base"
-                multiline
-                numberOfLines={2}
-                textAlignVertical="top"
-              />
-            </View>
+            <CustomFormInput
+              label="Surgeon's Name"
+              value={surgeonName}
+              onChangeText={setSurgeonName}
+              placeholder="Enter surgeon's name"
+            />
             {/* Date of Surgery*/}
             <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">
+              <Text className="mb-1 ">
                 Date of Surgery *
               </Text>
               <TouchableOpacity
-                className="border border-gray-300 rounded-md px-3"
+                className="border border-gray-300 rounded-md px-3 py-3"
                 onPress={() => setShowDatePicker(true)}
+                activeOpacity={0.7}
               >
                 <View className="flex-row items-center">
-                  <TextInput
-                    value={dateOfSurgery ? formatDate(dateOfSurgery) : ""}
-                    placeholder="MM-DD-YY"
-                    className="flex-1 text-base"
-                    editable={false}
-                    pointerEvents="none"
-                  />
+                  <Text
+                    className={`flex-1 text-base ${
+                      dateOfSurgery ? "text-black" : "text-gray-500"
+                    }`}
+                  >
+                    {dateOfSurgery ? formatDate(dateOfSurgery) : "MM-DD-YY"}
+                  </Text>
                   <Icon
                     as={CalendarDaysIcon}
-                    className="text-typography-500 m-1 w-5 h-5"
+                    className="text-gray-500 w-5 h-5"
                   />
                 </View>
               </TouchableOpacity>
@@ -518,16 +493,18 @@ function AddUpdateFormPage({
               />
             </View>
             {/* Details */}
-            <Text className="text-gray-500 mb-1 text-base">Description</Text>
+            <Text className=" mb-1 text-base ">
+              Description
+            </Text>
             <Textarea
               size="md"
               isReadOnly={false}
               isInvalid={false}
               isDisabled={false}
-              className="w-full"
+              className="w-full rounded-lg"
             >
               <TextareaInput
-                placeholder="Enter description"
+                placeholder="Enter procedure details"
                 style={{ textAlignVertical: "top", fontSize: 16 }}
                 value={procedureDesc}
                 onChangeText={setProcedureDesc}
@@ -536,7 +513,7 @@ function AddUpdateFormPage({
           </View>
         </ScrollView>
         {/* Save button */}
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingItem ? "Update" : "Save"}
             onPress={() => {
