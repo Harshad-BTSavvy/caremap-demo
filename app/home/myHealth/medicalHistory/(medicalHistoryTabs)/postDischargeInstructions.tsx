@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import {
   View,
@@ -29,6 +30,8 @@ import { logger } from "@/services/logging/logger";
 import { router } from "expo-router";
 import { Divider } from "@/components/ui/divider";
 import { CustomButton } from "@/components/shared/CustomButton";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
 
 export default function PostDischargeInstructions() {
   const { patient } = useContext(PatientContext);
@@ -121,7 +124,7 @@ export default function PostDischargeInstructions() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Post Discharge Instruction"
@@ -134,15 +137,13 @@ export default function PostDischargeInstructions() {
 
       <View className="px-5 pt-5 flex-1">
         <View className="flex-1">
+          <IconLabelHeading
+            icon={require("@/assets/images/allergies.png")}
+            label="Discharge Summary"
+            subtitle="Details of your discharge summary."
+            count={patientDischargeInstructions.length}
+          />
           {/* Heading*/}
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: palette.heading }}
-          >
-            Discharge Summary
-          </Text>
-
-          <Divider className="bg-gray-300 my-3" />
 
           <View className="flex-1">
             <FlatList
@@ -189,12 +190,12 @@ export default function PostDischargeInstructions() {
                           Summary:
                         </Text>
                         <Text
-                          className="font-normal text-base leading-5 text-gray-600"
+                          className="font-normal text-base leading-5 text-gray-700"
                           style={{
                             flexShrink: 1,
                             // flexWrap: "wrap",
-                            textAlign: "left",
-                            maxWidth: 180,
+                            textAlign: "right",
+                            maxWidth: 190,
                           }}
                           // numberOfLines={2}
                           // ellipsizeMode="tail"
@@ -208,7 +209,7 @@ export default function PostDischargeInstructions() {
                           Date of discharge:
                         </Text>
                         <Text
-                          className="font-normal text-base leading-5 text-gray-600"
+                          className="font-normal text-base leading-5 text-gray-700"
                           style={{
                             flexShrink: 1,
                             textAlign: "right",
@@ -228,7 +229,7 @@ export default function PostDischargeInstructions() {
                       </View>
                       {/* Details */}
                       {item.details ? (
-                        <Text className="text-base text-gray-500 leading-5">
+                        <Text className="text-base text-gray-700 leading-5">
                           {item.details}
                         </Text>
                       ) : null}
@@ -243,10 +244,9 @@ export default function PostDischargeInstructions() {
         <Divider className="bg-gray-300 mb-2" />
 
         {/* Add Button */}
-        <CustomButton
-          title="Add Post Discharge Details"
-          onPress={() => setShowForm(true)}
-        />
+        <View className="py-5">
+          <CustomButton title="Add Details" onPress={() => setShowForm(true)} />
+        </View>
       </View>
 
       <CustomAlertDialog
@@ -318,7 +318,7 @@ function AddUpdateFormPage({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Post Discharge Instruction"
@@ -345,50 +345,46 @@ function AddUpdateFormPage({
           showsVerticalScrollIndicator={true}
         >
           <View className="flex-1">
-            <Text
-              className="text-xl font-medium mb-3"
-              style={{ color: palette.heading }}
-            >
-              {editingItem
-                ? "Update discharge summary"
-                : "Add discharge summary"}
-            </Text>
+            <IconLabelHeading
+              icon={require("@/assets/images/allergies.png")}
+              label={
+                editingItem
+                  ? "Update discharge summary"
+                  : "Add discharge summary"
+              }
+              // subtitle="Please provide the details below"
+            />
+
             {/* Discharge summary */}
-            <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">Summary *</Text>
-              <TextInput
-                value={dischargeSummary}
-                onChangeText={setDischargeSummary}
-                placeholder="Enter discharge summary"
-                className="border border-gray-300 rounded-md px-3 py-3 text-base"
-                multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-              />
-            </View>
+            <CustomFormInput
+              label="Summary *"
+              value={dischargeSummary}
+              onChangeText={setDischargeSummary}
+              placeholder="Enter discharge summary"
+            />
             {/* Date of discharge*/}
             <View className="mb-4">
-              <Text className="text-gray-600 text-base mb-1">
-                Date of discharge *
-              </Text>
+              <Text className="  text-base mb-1">Date of discharge *</Text>
               <TouchableOpacity
-                className="border border-gray-300 rounded-md px-3"
+                className="border border-gray-300 rounded-md px-3 py-3"
                 onPress={() => setShowDatePicker(true)}
+                activeOpacity={0.7}
               >
                 <View className="flex-row items-center">
-                  <TextInput
-                    value={dateOfDischarge ? formatDate(dateOfDischarge) : ""}
-                    placeholder="MM-DD-YY"
-                    className="flex-1 text-base"
-                    editable={false}
-                    pointerEvents="none"
-                  />
+                  <Text
+                    className={`flex-1 text-base ${
+                      dateOfDischarge ? "text-black" : "text-gray-500"
+                    }`}
+                  >
+                    {dateOfDischarge ? formatDate(dateOfDischarge) : "MM-DD-YY"}
+                  </Text>
                   <Icon
                     as={CalendarDaysIcon}
-                    className="text-typography-500 m-1 w-5 h-5"
+                    className="text-gray-500 w-5 h-5"
                   />
                 </View>
               </TouchableOpacity>
+
               <DateTimePickerModal
                 isVisible={showDatePicker}
                 mode="date"
@@ -398,7 +394,7 @@ function AddUpdateFormPage({
               />
             </View>
             {/* Details */}
-            <Text className="text-gray-500 mb-1 text-base">Description</Text>
+            <Text className=" mb-1 text-base">Description</Text>
             <Textarea
               size="md"
               isReadOnly={false}
@@ -407,7 +403,7 @@ function AddUpdateFormPage({
               className="w-full"
             >
               <TextareaInput
-                placeholder="Enter description"
+                placeholder="Enter discharge details"
                 style={{ textAlignVertical: "top", fontSize: 16 }}
                 value={dischargeDesc}
                 onChangeText={setDischargeDesc}
@@ -417,7 +413,7 @@ function AddUpdateFormPage({
         </ScrollView>
 
         {/* Save button */}
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingItem ? "Update" : "Save"}
             onPress={() => {

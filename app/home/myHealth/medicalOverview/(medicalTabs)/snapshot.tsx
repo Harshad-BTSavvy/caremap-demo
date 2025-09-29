@@ -23,6 +23,8 @@ import { Divider } from "@/components/ui/divider";
 import Header from "@/components/shared/Header";
 import { useCustomToast } from "@/components/shared/useCustomToast";
 import { CustomButton } from "@/components/shared/CustomButton";
+import AppIcon from "@/components/shared/AppIcon";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
 
 export default function Snapshot() {
   const { patient } = useContext(PatientContext);
@@ -92,7 +94,7 @@ export default function Snapshot() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Snapshot"
         right={
@@ -115,12 +117,11 @@ export default function Snapshot() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={true}
         >
-          <Text
-            style={{ color: palette.heading }}
-            className="text-xl font-semibold mb-2"
-          >
-            Describe about yourself.
-          </Text>
+          <IconLabelHeading
+            icon={require("@/assets/images/snapshot.png")}
+            label="Describe about yourself."
+          />
+
           <Text className="text-base text-gray-500 mb-4 leading-5">
             E.g. You may include your preferences, what they like or dislike.
             What are their motivations, goals and favorite things.
@@ -131,7 +132,7 @@ export default function Snapshot() {
             isDisabled={false}
             isInvalid={false}
             isReadOnly={false}
-            className="mb-6 border border-gray-300 h-60"
+            className="mb-6 border border-gray-300 h-40"
           >
             <TextareaInput
               value={patientOverview}
@@ -145,19 +146,19 @@ export default function Snapshot() {
 
           <Divider className="bg-gray-300 mb-4" />
 
-          <Text
-            style={{ color: palette.heading }}
-            className="text-xl font-semibold mb-4"
-          >
-            Describe your health issues.
-          </Text>
+          
+          <IconLabelHeading
+            icon={require("@/assets/images/snapshot.png")}
+            label="Describe your health issues."
+            subtitle="Include current or past medical conditions etc."
+          />
 
           <Textarea
             size="lg"
             isDisabled={false}
             isInvalid={false}
             isReadOnly={false}
-            className="mb-6 border border-gray-300 h-60"
+            className="mb-6 border border-gray-300 h-40"
           >
             <TextareaInput
               value={healthIssues}
@@ -171,7 +172,7 @@ export default function Snapshot() {
         </ScrollView>
 
         {/* Save Button */}
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title="Save"
             onPress={handleSave}

@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import {
   View,
@@ -29,6 +30,9 @@ import {
 } from "@/services/core/HospitalizationService";
 import { router } from "expo-router";
 import { CustomButton } from "@/components/shared/CustomButton";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
 
 export default function Hospitalization() {
   const { patient } = useContext(PatientContext);
@@ -131,7 +135,7 @@ export default function Hospitalization() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Hospitalizations"
         right={
@@ -141,36 +145,38 @@ export default function Hospitalization() {
         }
       />
       <View className="px-5 pt-5 bg-white flex-1">
-        <Text
-          className="text-xl font-semibold mb-2"
-          style={{ color: palette.heading }}
-        >
-          List your active hospitalizations
-        </Text>
-        <View className="border-t border-gray-300 mb-4" />
+
+        <IconLabelHeading
+            icon={require("@/assets/images/hospitalization.png")}
+            label="List your active hospitalizations"
+            subtitle="Details of your hospitalization"
+            count={hospitalizations.length}
+          />
+        
+        {/* <View className="border-t border-gray-300 mb-4" /> */}
 
         <FlatList
           data={hospitalizations}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <View className="flex-row items-start border border-gray-300 rounded-xl p-4 mb-4">
-              <View className="flex-1 ">
-                <View className="flex-row mb-2 flex-wrap">
+            <View className="flex-row items-start border border-gray-300 rounded-xl py-4 pl-4 pr-2 mb-4">
+              <View className="flex-1">
+                <View className="flex-row mb-2 flex-wrap justify-between mr-2">
                   <Text className="font-medium">Date of Admission:</Text>
-                  <Text className="font-normal ml-8">
+                  <Text className="font-normal text-gray-700">
                     {formatDisplayDate(item.admission_date)}
                   </Text>
                 </View>
 
-                <View className="flex-row mb-2 flex-wrap">
-                  <Text className="font-medium">Date of Discharge: </Text>
-                  <Text className="font-normal ml-8">
+                <View className="flex-row mb-2 flex-wrap justify-between mr-2">
+                  <Text className="font-medium">Date of Discharge:</Text>
+                  <Text className="font-normal text-gray-700">
                     {formatDisplayDate(item.discharge_date)}
                   </Text>
                 </View>
 
                 {item.details ? (
-                  <Text className="text-gray-500  mt-1">{item.details}</Text>
+                  <Text className="text-gray-700 mt-1">{item.details}</Text>
                 ) : null}
               </View>
 
@@ -194,10 +200,13 @@ export default function Hospitalization() {
         />
 
         <Divider className="bg-gray-300 mb-2" />
-        <CustomButton
+        <View className="py-5">
+          <CustomButton
           title="Add Hospitalizations Details"
           onPress={() => setShowForm(true)}
         />
+           </View>
+        
       </View>
 
       <CustomAlertDialog
@@ -278,7 +287,7 @@ function HospitalizationForm({
   const isDisabled = !admission || !discharge || !description.trim();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Hospitalizations"
         right={
@@ -301,59 +310,55 @@ function HospitalizationForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
-            className="text-xl font-medium mb-3"
-            style={{ color: palette.heading }}
-          >
-            {editingItem
-              ? "Update Hospitalization"
-              : "Enter details of recent hospitalizations"}
-          </Text>
+
+          <IconLabelHeading
+            icon={require("@/assets/images/hospitalization.png")}
+            label={editingItem ? "Update hospitalization details" : "Add hospitalization details"}
+            // subtitle="Please provide the details below"
+          />
+
+          
 
           <View className="mb-4">
-            <Text className="text-base mb-1 text-gray-600">
-              Date of Admission
+            <Text className="text-base mb-1 text-black">
+              Date of Admission *
             </Text>
             <TouchableOpacity
-              className="border border-gray-300 rounded-md p-3 "
+              className="border border-gray-300 rounded-md px-3 py-3"
               onPress={() => showPicker(true)}
+              activeOpacity={0.7}
             >
               <View className="flex-row items-center">
-                <TextInput
-                  value={admission ? formatDate(admission) : ""}
-                  placeholder="MM-DD-YY"
-                  className="flex-1 text-base"
-                  editable={false}
-                  pointerEvents="none"
-                />
-                <Icon
-                  as={CalendarDaysIcon}
-                  className="text-typography-500 m-1 w-5 h-5"
-                />
+                <Text
+                  className={`flex-1 text-base ${
+                    admission ? "text-gray-800" : "text-gray-500"
+                  }`}
+                >
+                  {admission ? formatDate(admission) : "MM-DD-YYYY"}
+                </Text>
+                <Icon as={CalendarDaysIcon} className="text-gray-500 w-5 h-5" />
               </View>
             </TouchableOpacity>
           </View>
 
           <View className="mb-4">
-            <Text className="text-base mb-1 text-gray-600">
-              Date of Discharge
+            <Text className="text-base mb-1 text-black">
+              Date of Discharge *
             </Text>
             <TouchableOpacity
-              className="border border-gray-300 rounded-md p-3"
+              className="border border-gray-300 rounded-md px-3 py-3"
               onPress={() => showPicker(false)}
+              activeOpacity={0.7}
             >
               <View className="flex-row items-center">
-                <TextInput
-                  value={discharge ? formatDate(discharge) : ""}
-                  placeholder="MM-DD-YY"
-                  className="flex-1 text-base"
-                  editable={false}
-                  pointerEvents="none"
-                />
-                <Icon
-                  as={CalendarDaysIcon}
-                  className="text-typography-500 m-1 w-5 h-5"
-                />
+                <Text
+                  className={`flex-1 text-base ${
+                    discharge ? "text-black" : "text-gray-500"
+                  }`}
+                >
+                  {discharge ? formatDate(discharge) : "MM-DD-YYYY"}
+                </Text>
+                <Icon as={CalendarDaysIcon} className="text-gray-500 w-5 h-5" />
               </View>
             </TouchableOpacity>
           </View>
@@ -369,18 +374,23 @@ function HospitalizationForm({
             }
           />
 
-          <Text className="text-base mb-1 text-gray-600 mt-2">Description</Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter description"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
+          <Text className="text-base mb-1 text-black mt-2">Description *</Text>
+          <Textarea
+            size="lg"
+            isReadOnly={false}
+            isInvalid={false}
+            isDisabled={false}
+            className="w-full"
+          >
+            <TextareaInput
+              placeholder="Enter hospitalization details"
+              textAlignVertical="top"
+              value={description}
+              onChangeText={setDescription}
+            />
+          </Textarea>
         </ScrollView>
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingItem ? "Update" : "Add"}
             disabled={isDisabled}

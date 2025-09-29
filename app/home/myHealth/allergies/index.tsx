@@ -28,6 +28,10 @@ import { logger } from "@/services/logging/logger";
 import { router } from "expo-router";
 import { Divider } from "@/components/ui/divider";
 import { CustomButton } from "@/components/shared/CustomButton";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
+import { Icon } from "@/components/ui/icon";
+import { Calendar } from "lucide-react-native";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
 
 export default function Allergies() {
   const { patient } = useContext(PatientContext);
@@ -42,7 +46,7 @@ export default function Allergies() {
   const [allergyToDelete, setAllergyToDelete] = useState<PatientAllergy | null>(
     null
   );
-
+  const linkedHealthSystem: string[] = [];
   // Custom toast
   const showToast = useCustomToast();
 
@@ -136,7 +140,7 @@ export default function Allergies() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Allergies"
@@ -149,28 +153,25 @@ export default function Allergies() {
 
       <View className="px-5 pt-5 flex-1">
         <View>
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: palette.heading }}
-          >
-            Allergies (Linked Health System)
-          </Text>
-          <Text className="text-gray-500 text-lg">
-            Select ones to review with your care team
-          </Text>
-          {/* hr */}
+          <IconLabelHeading
+            icon={require("@/assets/images/allergies.png")}
+            label="Allergies (Linked Health System)"
+            subtitle="Select ones to review with your care team"
+            count={linkedHealthSystem.length}
+          />
+
           <Divider className="bg-gray-300 my-3" />
         </View>
 
         <View className="flex-1">
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: palette.heading }}
-          >
-            List your Allergies
-          </Text>
+          <IconLabelHeading
+            icon={require("@/assets/images/allergies.png")}
+            label="List your allergies"
+            subtitle="Manage your personal allergy records"
+            count={patientAllergy.length}
+          />
 
-          <Divider className="bg-gray-300 my-3" />
+          {/* <Divider className="bg-gray-300 my-3" /> */}
 
           <View className="flex-1">
             <FlatList
@@ -184,14 +185,21 @@ export default function Allergies() {
                   <View className="border border-gray-300 rounded-lg mb-3 px-3 py-3">
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center space-x-2">
-                        <Text className="text-lg ml-3 max-w-[220px] text-left font-medium">
+                        <Text className="text-lg ml-3 max-w-[220px] text-left font-semibold">
                           {item.topic}
                         </Text>
                       </View>
                       <View className="flex-row">
-                        <Text className="text-lg text-gray-700 mr-3">
-                          {formattedDate}
-                        </Text>
+                        <View className="flex-row items-center ">
+                          <Icon
+                            as={Calendar}
+                            size="sm"
+                            className="text-gray-600 mr-1"
+                          />
+                          <Text className="text-lg text-gray-700 mr-3">
+                            {formattedDate}
+                          </Text>
+                        </View>
 
                         <ActionPopover
                           onEdit={() => {
@@ -214,7 +222,8 @@ export default function Allergies() {
                     {item.severity ? (
                       <View className="px-3">
                         <Text className="text-base text-gray-700">
-                          Severity: {item.severity}
+                          Severity:
+                          <Text className="font-semibold">{item.severity}</Text>
                         </Text>
                       </View>
                     ) : null}
@@ -222,7 +231,7 @@ export default function Allergies() {
                 );
               }}
               ListEmptyComponent={
-                <Text className="text-gray-500">No Allergies found.</Text>
+                <Text className="text-gray-500">No allergies found.</Text>
               }
               style={{ minHeight: 50 }}
             />
@@ -230,7 +239,7 @@ export default function Allergies() {
         </View>
 
         {/* hr */}
-        <Divider className="bg-gray-300 mb-2" />
+        <Divider className="bg-gray-300 " />
 
         {/* Add Button */}
         {/* <TouchableOpacity
@@ -240,11 +249,12 @@ export default function Allergies() {
         >
           <Text className="text-white font-medium text-lg">Add Allergy</Text>
         </TouchableOpacity> */}
-
-        <CustomButton
-          title="Add Allergy"
-          onPress={() => setShowAddForm(true)}
-        />
+        <View className="py-5">
+          <CustomButton
+            title="Add Allergy"
+            onPress={() => setShowAddForm(true)}
+          />
+        </View>
       </View>
 
       <CustomAlertDialog
@@ -298,7 +308,7 @@ function AddAllergyPage({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Allergies"
@@ -321,29 +331,29 @@ function AddAllergyPage({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
+          {/* <Text
             className="text-xl font-medium mb-3"
             style={{ color: palette.heading }}
           >
-            {editingCondition ? "Update Allergy" : " Add Allergy"}
-          </Text>
+            {editingCondition ? "Update Allergy" : " Update Allergy"}
+          </Text> */}
+          <IconLabelHeading
+            icon={require("@/assets/images/allergies.png")}
+            label={editingCondition ? "Update Allergy" : "Add Allergy"}
+            // subtitle="Please provide the details below"
+          />
 
           {/* Enter Topic */}
-          <View className="mb-4">
-            <Text className="text-gray-600 text-base mb-2">Enter Topic *</Text>
-            <TextInput
-              value={topic}
-              onChangeText={setTopic}
-              placeholder="Please Enter your topic here"
-              className="border border-gray-300 rounded-md px-3 py-3 text-base"
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-          </View>
+          <CustomFormInput
+            className="mb-2"
+            label="Enter Topic *"
+            value={topic}
+            onChangeText={setTopic}
+            placeholder="e.g., Diabetes, Hypertension"
+          />
 
           {/* Details */}
-          <Text className="text-gray-500 mb-2 text-base">Details</Text>
+          <Text className="text-black mb-2 text-base">Details</Text>
           <Textarea
             size="md"
             isReadOnly={false}
@@ -360,8 +370,8 @@ function AddAllergyPage({
           </Textarea>
 
           {/* Severity */}
-          <Text className="text-gray-600 text-base mb-2 mt-4">Severity</Text>
-          <View style={{ width: "70%", alignSelf: "flex-start" }}>
+          <Text className="text-black text-base mb-2 mt-4">Severity *</Text>
+          <View style={{ width: "100%", alignSelf: "flex-start" }}>
             <View
               className="flex-row border rounded-lg overflow-hidden mb-2"
               style={{ borderColor: palette.primary }}
@@ -398,7 +408,7 @@ function AddAllergyPage({
         </ScrollView>
 
         {/* Save button */}
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingCondition ? "Update" : "Save"}
             onPress={handleSave}

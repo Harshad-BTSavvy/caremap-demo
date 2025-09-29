@@ -27,6 +27,11 @@ import { logger } from "@/services/logging/logger";
 import { router } from "expo-router";
 import { CustomButton } from "@/components/shared/CustomButton";
 import { Divider } from "@/components/ui/divider";
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
+import CommonConditions from "@/components/shared/CommonConditions";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
+import { Calendar } from "lucide-react-native";
+import { Icon } from "@/components/ui/icon";
 
 const linkedHealthSystem: string[] = [
   "Attention Deficient and Hyperactivity Disorder (ADHD)",
@@ -137,7 +142,7 @@ export default function MedicalConditions() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Medical Conditions"
@@ -151,14 +156,14 @@ export default function MedicalConditions() {
       <View className="px-5 pt-5 flex-1">
         {/* Linked Health System */}
         <View className="mb-6">
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: palette.heading }}
-          >
-            Medical Conditions (Linked Health System)
-          </Text>
+          <IconLabelHeading
+            icon={require("@/assets/images/medical-condition.png")}
+            label="Medical Conditions(Linked Health System)"
+            subtitle="Imported from your healthcare provider"
+            count={linkedHealthSystem.length}
+          />
 
-          <Divider className="bg-gray-300 my-3" />
+          <Divider className="bg-gray-300 my-2" />
 
           <View>
             <FlatList
@@ -183,14 +188,14 @@ export default function MedicalConditions() {
 
         {/* User Entered */}
         <View className="flex-1">
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: palette.heading }}
-          >
-            Medical Conditions (User entered)
-          </Text>
+          <IconLabelHeading
+            icon={require("@/assets/images/medical-condition.png")}
+            label="Medical Conditions (User entered)"
+            subtitle="Conditions you've added manually"
+            count={userConditions.length}
+          />
 
-          <Divider className="bg-gray-300 my-3" />
+          <Divider className="bg-gray-300 my-2" />
 
           <View className="flex-1">
             <FlatList
@@ -202,26 +207,36 @@ export default function MedicalConditions() {
                 const formattedDate = getFormattedConditionDate(item);
                 return (
                   <View className="flex-row items-center justify-between border border-gray-300 rounded-lg px-3 py-3 mb-3">
-                    <View className="flex-row items-center space-x-2">
-                      <Text className="text-lg ml-3 max-w-[220px] text-left">
-                        {item.condition_name}
-                      </Text>
-                    </View>
-                    <View className="flex-row items-center">
-                      <Text className="text-lg text-gray-500 mr-3">
-                        {formattedDate}
-                      </Text>
-                      <ActionPopover
-                        onEdit={() => {
-                          handleEdit(item);
-                        }}
-                        onDelete={() => {
-                          setConditionToDelete(item);
-                          setShowAlertDialog(true);
-                        }}
-                      />
-                    </View>
-                  </View>
+  {/* Left section */}
+  <View className="flex-1">
+    <Text className="text-lg font-medium text-left text-black max-w-[220px] ml-2">
+      {item.condition_name}
+    </Text>
+
+    <View className="flex-row items-center mt-1">
+      <Icon
+        as={Calendar}
+        size="sm"
+        className="text-gray-600 mr-1"
+      />
+      <Text className="text-base text-gray-500">
+        {formattedDate}
+      </Text>
+    </View>
+  </View>
+
+  {/* Right section */}
+  <View className="flex-row items-center ml-2">
+    <ActionPopover
+      onEdit={() => handleEdit(item)}
+      onDelete={() => {
+        setConditionToDelete(item);
+        setShowAlertDialog(true);
+      }}
+    />
+  </View>
+</View>
+
                 );
               }}
               ListEmptyComponent={
@@ -237,10 +252,12 @@ export default function MedicalConditions() {
         <Divider className="bg-gray-300 mb-2" />
 
         {/* Add Condition Button */}
-        <CustomButton
-          title="Add medical condition"
-          onPress={() => setShowAddForm(true)}
-        />
+        <View className="pb-5">
+          <CustomButton
+            title="Add medical condition"
+            onPress={() => setShowAddForm(true)}
+          />
+        </View>
       </View>
 
       <CustomAlertDialog
@@ -300,9 +317,17 @@ function AddMedicalConditionsPage({
     });
     onClose(); // Go back to list
   };
+  const conditions = [
+    "Diabetes Type 2",
+    "High Blood Pressure",
+    "Asthma",
+    "Arthritis",
+    "Depression",
+    "Anxiety",
+  ];
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       {/* Header */}
       <Header
         title="Medical Conditions"
@@ -313,45 +338,48 @@ function AddMedicalConditionsPage({
         }
         onBackPress={onClose}
       />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         className="bg-white"
-        // behavior={Platform.OS === "ios" ? "padding" : "height"}
-        behavior={"padding"}
-        // keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        behavior="padding"
       >
         <ScrollView
           className="px-5 pt-5 flex-1"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
-            className="text-xl font-medium mb-3"
-            style={{ color: palette.heading }}
-          >
-            {editingCondition
-              ? "Update your current medical condition"
-              : "Add your current medical condition"}
-          </Text>
+          {/* Heading with Icon */}
+          <IconLabelHeading
+            icon={require("@/assets/images/medical-condition.png")}
+            label={
+              editingCondition
+                ? "Update your current medical condition"
+                : "Add your current medical condition"
+            }
+            subtitle="Enter a medical condition you've been diagnosed with"
+          />
 
-          <Textarea
-            size="lg"
-            isReadOnly={false}
-            isInvalid={false}
-            isDisabled={false}
-            className="w-full"
-          >
-            <TextareaInput
-              placeholder="Enter condition..."
-              textAlignVertical="top"
-              value={condition}
-              onChangeText={setCondition}
+          {/* Input box */}
+          <CustomFormInput
+            className="mb-2"
+            label="Medical Condition*"
+            value={condition}
+            onChangeText={setCondition}
+            placeholder="Enter condition name"
+          />
+
+          {/* ✅ CommonConditions below textarea, aligned properly */}
+          <View className="mt-6">
+            <CommonConditions
+              conditions={conditions}
+              onSelect={(c) => setCondition(c)}
             />
-          </Textarea>
+          </View>
         </ScrollView>
 
         {/* Save button */}
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingCondition ? "Update" : "Save"}
             disabled={isDisabled}

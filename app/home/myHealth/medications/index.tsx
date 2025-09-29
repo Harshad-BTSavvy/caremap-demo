@@ -27,7 +27,10 @@ import {
 } from "@/services/core/PatientMedicationService";
 import { router } from "expo-router";
 import { CustomButton } from "@/components/shared/CustomButton";
-
+import IconLabelHeading from "@/components/shared/IconLabelHeading";
+import { CustomFormInput } from "@/components/shared/CustomFormInput";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
+const linkedHealthSystem: string[] = [];
 export default function MedicationsScreen() {
   const { patient } = useContext(PatientContext);
   const [medicationList, setMedicationList] = useState<PatientMedication[]>([]);
@@ -107,7 +110,7 @@ export default function MedicationsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Medications"
         right={
@@ -118,23 +121,22 @@ export default function MedicationsScreen() {
       />
 
       <View className="px-5 pt-5 bg-white flex-1">
-        <Text
-          style={{ color: palette.heading }}
-          className="text-xl font-semibold mb-2"
-        >
-          Medications (Linked Health System)
-        </Text>
-        <Text className="text-gray-500 mb-3 text-lg">
-          Select ones to review with your care team{" "}
-        </Text>
-        <Divider className="bg-gray-300" />
-        <Text
-          style={{ color: palette.heading }}
-          className="text-xl font-semibold mt-5"
-        >
-          List your active medications
-        </Text>
-        <Divider className="bg-gray-300 my-3" />
+        {/* Add linked health system medications */}
+        <IconLabelHeading
+          icon={require("@/assets/images/medications.png")}
+          label="Medications (Linked Health System)"
+          subtitle="Medications imported from your linked health system"
+          count={linkedHealthSystem.length}
+        />
+
+        <Divider className="bg-gray-300 my-2" />
+        <IconLabelHeading
+          icon={require("@/assets/images/medications.png")}
+          label="List your active medications"
+          subtitle="Manage your personal medication records"
+          count={medicationList.length}
+        />
+
 
         <FlatList
           data={medicationList}
@@ -169,10 +171,12 @@ export default function MedicationsScreen() {
         />
 
         <Divider className="bg-gray-300 mb-2" />
-        <CustomButton
-          title="Add New Medication"
-          onPress={() => setShowForm(true)}
-        />
+        <View className="p-5">
+          <CustomButton
+            title="Add New Medication"
+            onPress={() => setShowForm(true)}
+          />
+        </View>
       </View>
 
       <CustomAlertDialog
@@ -231,7 +235,7 @@ function MedicationForm({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
         title="Medications"
         right={
@@ -253,35 +257,39 @@ function MedicationForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
-            className="text-xl font-medium mb-3"
-            style={{ color: palette.heading }}
-          >
-            {editingItem ? "Edit" : "Add"} Medications
-          </Text>
+          <IconLabelHeading
+            icon={require("@/assets/images/medications.png")}
+            label={editingItem ? "Update Medication" : "Add Medication"}
+            subtitle="Keep your medication records up to date"
+          />
 
-          <Text className="text-base mb-1 text-gray-600">Medications Name</Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter medication name"
+          <CustomFormInput
+            className="mb-2"
+            label="Medications name"
             value={name}
             onChangeText={setName}
+            placeholder="Enter medication name"
           />
 
-          <Text className="text-base mb-1 text-gray-600">
-            Medications detail
+          <Text className="text-black mb-2 text-base">
+            Medications details
           </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg p-3 mb-4"
-            placeholder="Enter guidance steps"
-            value={details}
-            onChangeText={setGuidance}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
+          <Textarea
+            size="md"
+            isReadOnly={false}
+            isInvalid={false}
+            isDisabled={false}
+            className="w-full"
+          >
+            <TextareaInput
+              placeholder="Enter guidance steps"
+              style={{ textAlignVertical: "top", fontSize: 16 }}
+              value={details}
+              onChangeText={setGuidance}
+            />
+          </Textarea>
         </ScrollView>
-        <View className="px-5">
+        <View className="p-5">
           <CustomButton
             title={editingItem ? "Update" : "Save"}
             disabled={isSaveDisabled}
