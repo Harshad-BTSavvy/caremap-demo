@@ -33,7 +33,7 @@ export default function TrackScreen() {
     if (selectedDate !== formatted) {
       setSelectedDate(formatted);
     }
-  }, [currentSelectedDate,selectedDate]);
+  }, [currentSelectedDate, selectedDate]);
 
   useFocusEffect(
     useCallback(() => {
@@ -78,10 +78,9 @@ export default function TrackScreen() {
         right={
           <TouchableOpacity onPress={handleAddItem} className="px-2">
             <Text className="text-white font-medium whitespace-nowrap">
-              {/* {categories.some((cat) => cat.items.length > 0)
+              {categories.some((cat) => cat.items.length > 0)
                 ? "Edit item"
-                : "Add item"} */}
-                Add item
+                : "Add item"}
             </Text>
           </TouchableOpacity>
         }

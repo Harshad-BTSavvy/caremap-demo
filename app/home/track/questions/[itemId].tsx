@@ -7,12 +7,14 @@ import { UserContext } from "@/context/UserContext";
 import {
   addOptionToQuestion,
   getQuestionsWithOptions,
+  isQuestionVisible,
   saveResponse,
 } from "@/services/core/TrackService";
 import {
   Question,
   ResponseOption,
 } from "@/services/database/migrations/v1/schema_v1";
+import { logger } from "@/services/logging/logger";
 import { ROUTES } from "@/utils/route";
 import palette from "@/utils/theme/color";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -47,32 +49,6 @@ export default function QuestionFlowScreen() {
   const [customOptions, setCustomOptions] = useState<Record<number, string>>(
     {}
   );
-
-  // Utility to check if a question is visible given current answers
-  const isQuestionVisible = (
-    q: Question,
-    answers: Record<number, any>
-  ): boolean => {
-    if (!q.parent_question_id || !q.display_condition) return true;
-
-    try {
-      const cond = JSON.parse(q.display_condition);
-      const parentAnswer = answers[q.parent_question_id];
-
-      if (cond.eq !== undefined) return parentAnswer === cond.eq;
-      if (cond.neq !== undefined) return parentAnswer !== cond.neq;
-      if (cond.gt !== undefined) return Number(parentAnswer) > cond.gt;
-      if (cond.gte !== undefined) return Number(parentAnswer) >= cond.gte;
-      if (cond.lt !== undefined) return Number(parentAnswer) < cond.lt;
-      if (cond.lte !== undefined) return Number(parentAnswer) <= cond.lte;
-      if (cond.contains !== undefined && Array.isArray(parentAnswer)) {
-        return parentAnswer.includes(cond.contains);
-      }
-      return true;
-    } catch {
-      return true;
-    }
-  };
 
   // Compute visibleQuestions dynamically (no separate state needed)
   const visibleQuestions = questions.filter((q) =>
@@ -113,18 +89,26 @@ export default function QuestionFlowScreen() {
         const response = qwo.existingResponse;
         if (response && response.question_id != null) {
           let answerValue: any = response.answer;
+
+          // Parse JSON to clean quotes and arrays
           try {
             answerValue = JSON.parse(answerValue);
-          } catch {
-            // leave as-is if not JSON
+          } catch (e) {
+            // If not JSON, keep as-is (e.g., numeric answers)
           }
+
           existingResponses[response.question_id] = answerValue;
+
+          logger.debug(
+            `Existing answer for question id ${response.question_id} is/are :`,
+            answerValue
+          );
         }
       });
 
       setQuestions(questionsArray);
       setResponseOptions(responseOptionsArray);
-      setAnswers(existingResponses);
+      setAnswers(existingResponses); // <-- now all question types will highlight properly
     };
 
     loadQuestionsWithOptions();

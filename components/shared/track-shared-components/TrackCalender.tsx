@@ -1,7 +1,7 @@
+import palette from "@/utils/theme/color";
+import moment from "moment";
 import React from "react";
 import CalendarStrip from "react-native-calendar-strip";
-import moment from "moment";
-import palette from "@/utils/theme/color";
 
 interface CalendarProps {
   selectedDate: moment.Moment;
