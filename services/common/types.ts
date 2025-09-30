@@ -55,6 +55,7 @@ export interface CustomGoalQuestion {
   type: string;
   required: boolean;
   options?: string[];
+  
 }
 
 export interface CustomGoalParams {
@@ -62,5 +63,8 @@ export interface CustomGoalParams {
   userId: string;
   patientId: number;
   date: string;
+  frequency: "daily" | "weekly" | "monthly"; 
+  code:string;
   questions: CustomGoalQuestion[];
+  
 }

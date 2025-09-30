@@ -10,6 +10,8 @@ const StackLayout = () => {
         <Stack.Screen name="addItem" />
         <Stack.Screen name="customGoals/index" />
         <Stack.Screen name="customGoals/addQuestions" />
+        <Stack.Screen name="manageCustomGoals" />
+        {/* <Stack.Screen name="customGoals/manageCustomGoals" /> */}
       </Stack>
      </TrackProvider>
   );
