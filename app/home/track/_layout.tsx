@@ -1,4 +1,4 @@
-import { TrackProvider } from '@/context/TrackContext';
+import { TrackProvider } from "@/context/TrackContext";
 import { Stack } from "expo-router";
 
 const StackLayout = () => {
@@ -10,8 +10,10 @@ const StackLayout = () => {
         <Stack.Screen name="addItem" />
         <Stack.Screen name="customGoals/index" />
         <Stack.Screen name="customGoals/addQuestions" />
+        <Stack.Screen name="manageCustomGoals" />
+        {/* <Stack.Screen name="customGoals/manageCustomGoals" /> */}
       </Stack>
-     </TrackProvider>
+    </TrackProvider>
   );
 };
 

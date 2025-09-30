@@ -163,7 +163,7 @@ export default function MedicalConditions() {
             count={linkedHealthSystem.length}
           />
 
-          <Divider className="bg-gray-300 my-2" />
+          {/* <Divider className="bg-gray-300 my-2" /> */}
 
           <View>
             <FlatList
@@ -195,7 +195,7 @@ export default function MedicalConditions() {
             count={userConditions.length}
           />
 
-          <Divider className="bg-gray-300 my-2" />
+          {/* <Divider className="bg-gray-300 my-2" /> */}
 
           <View className="flex-1">
             <FlatList
@@ -207,36 +207,35 @@ export default function MedicalConditions() {
                 const formattedDate = getFormattedConditionDate(item);
                 return (
                   <View className="flex-row items-center justify-between border border-gray-300 rounded-lg px-3 py-3 mb-3">
-  {/* Left section */}
-  <View className="flex-1">
-    <Text className="text-lg font-medium text-left text-black max-w-[220px] ml-2">
-      {item.condition_name}
-    </Text>
+                    {/* Left section */}
+                    <View className="flex-1">
+                      <Text className="text-lg font-medium text-left text-black ml-2">
+                        {item.condition_name}
+                      </Text>
 
-    <View className="flex-row items-center mt-1">
-      <Icon
-        as={Calendar}
-        size="sm"
-        className="text-gray-600 mr-1"
-      />
-      <Text className="text-base text-gray-500">
-        {formattedDate}
-      </Text>
-    </View>
-  </View>
+                      <View className="flex-row items-center mt-1">
+                        <Icon
+                          as={Calendar}
+                          size="sm"
+                          className="text-gray-600 mr-1"
+                        />
+                        <Text className="text-base text-gray-500">
+                          {formattedDate}
+                        </Text>
+                      </View>
+                    </View>
 
-  {/* Right section */}
-  <View className="flex-row items-center ml-2">
-    <ActionPopover
-      onEdit={() => handleEdit(item)}
-      onDelete={() => {
-        setConditionToDelete(item);
-        setShowAlertDialog(true);
-      }}
-    />
-  </View>
-</View>
-
+                    {/* Right section */}
+                    <View className="flex-row items-center ml-2">
+                      <ActionPopover
+                        onEdit={() => handleEdit(item)}
+                        onDelete={() => {
+                          setConditionToDelete(item);
+                          setShowAlertDialog(true);
+                        }}
+                      />
+                    </View>
+                  </View>
                 );
               }}
               ListEmptyComponent={

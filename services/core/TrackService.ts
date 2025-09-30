@@ -5,6 +5,8 @@ import {
   TrackItemWithProgress,
   CustomGoalParams,
 } from "@/services/common/types";
+import { QuestionType } from "@/constants/trackTypes";
+
 import { getCurrentTimestamp } from "@/services/core/utils";
 import { useModel } from "@/services/database/BaseModel";
 import { tables } from "@/services/database/migrations/v1/schema_v1";
@@ -567,8 +569,8 @@ export const getSummariesForItem = async (
 export const addCustomGoal = async (
   params: CustomGoalParams
 ): Promise<number> => {
-  const { name, patientId, date, questions } = params;
-  logger.debug("addCustomGoal called", { name, patientId, date });
+  const { name, patientId, date, frequency, questions } = params;
+  logger.debug("addCustomGoal called", { name, patientId, date, frequency });
 
   // Find the Custom category ID
   const customCategoryId = await useModel(trackCategoryModel, async (model) => {
@@ -579,11 +581,17 @@ export const addCustomGoal = async (
     return category.id;
   });
 
+  // Generate a unique code for this track item
+  const trackItemCode = `CUSTOM_${Date.now()}`;
+
   // Create a new track item for the custom goal
   const trackItemId = await useModel(trackItemModel, async (model) => {
     const result = await model.insert({
       name,
+      code: trackItemCode,
+      frequency: frequency as any,
       category_id: customCategoryId,
+      status: "active" as any,
       created_date: now,
       updated_date: now,
     });
@@ -591,13 +599,20 @@ export const addCustomGoal = async (
   });
 
   // Create questions for the custom goal
-  for (const question of questions) {
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i];
+
+    // Generate a unique code for each question
+    const questionCode = `CUSTOM_Q_${Date.now()}_${i}`;
+
     const questionId = await useModel(questionModel, async (model) => {
       const result = await model.insert({
         item_id: trackItemId,
+        code: questionCode,
         text: question.text,
-        type: question.type,
+        type: question.type as any,
         required: question.required ? 1 : 0,
+        status: "active" as any,
         created_date: now,
         updated_date: now,
       });
@@ -605,23 +620,31 @@ export const addCustomGoal = async (
     });
 
     // If question type is mcq, msq, or boolean, add default/options
-    if (question.type === "boolean") {
+    if (question.type === QuestionType.BOOLEAN || question.type === "boolean") {
       await useModel(responseOptionModel, async (model) => {
         await model.insert({
           question_id: questionId,
+          code: `OPTION_${Date.now()}_YES`,
           text: "Yes",
+          status: "active" as any,
           created_date: now,
           updated_date: now,
         });
         await model.insert({
           question_id: questionId,
+          code: `OPTION_${Date.now()}_NO`,
           text: "No",
+          status: "active" as any,
           created_date: now,
           updated_date: now,
         });
       });
     } else if (
-      (question.type === "mcq" || question.type === "msq") &&
+      question &&
+      (question.type === QuestionType.MCQ ||
+        question.type === QuestionType.MSQ ||
+        question.type === "mcq" ||
+        question.type === "msq") &&
       Array.isArray(question.options)
     ) {
       const cleanOptions = question.options.filter(
@@ -629,10 +652,13 @@ export const addCustomGoal = async (
       );
       if (cleanOptions.length > 0) {
         await useModel(responseOptionModel, async (model) => {
-          for (const opt of cleanOptions) {
+          for (let j = 0; j < cleanOptions.length; j++) {
+            const opt = cleanOptions[j];
             await model.insert({
               question_id: questionId,
+              code: `OPTION_${Date.now()}_${j}`,
               text: opt.trim(),
+              status: "active" as any,
               created_date: now,
               updated_date: now,
             });
@@ -646,6 +672,151 @@ export const addCustomGoal = async (
     name,
     patientId,
     date,
+    frequency,
   });
   return trackItemId;
+};
+
+export const editCustomGoal = async (
+  trackItemId: number,
+  patientId: number,
+  updates: {
+    name?: string;
+    frequency?: "daily" | "weekly" | "monthly";
+    questions?: {
+      id?: number;
+      text: string;
+      type: string;
+      required?: boolean;
+      options?: string[];
+    }[];
+  }
+): Promise<void> => {
+  logger.debug("editCustomGoal called", { trackItemId, patientId, updates });
+
+  // Update name if provided
+  if (updates.name) {
+    await useModel(trackItemModel, async (model) => {
+      await model.updateByFields(
+        { name: updates.name, updated_date: now },
+        { id: trackItemId }
+      );
+    });
+  }
+
+  // Handle questions
+  if (updates.questions && updates.questions.length > 0) {
+    for (const q of updates.questions) {
+      if (q.id) {
+        // Update existing question
+        await useModel(questionModel, async (model) => {
+          await model.updateByFields(
+            {
+              text: q.text,
+              type: q.type as any,
+              required: q.required ? 1 : 0,
+              updated_date: now,
+            },
+            { id: q.id }
+          );
+        });
+
+        if (q.options) {
+          // Replace options
+          await useModel(responseOptionModel, async (model) => {
+            await model.deleteByFields({ question_id: q.id as any });
+            const opts = q.options ?? [];
+            for (const opt of opts) {
+              await model.insert({
+                code: `RESP_${Date.now()}_${Math.random()
+                  .toString(36)
+                  .slice(2, 8)}`,
+                question_id: q.id,
+                text: opt.trim(),
+                status: "active" as any,
+                created_date: now,
+                updated_date: now,
+              });
+            }
+          });
+        }
+      } else {
+        // Insert new question
+        const questionId = await useModel(questionModel, async (model) => {
+          const result = await model.insert({
+            code: `Q_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            item_id: trackItemId,
+            text: q.text,
+            type: q.type as any,
+            required: q.required ? 1 : 0,
+            status: "active" as any,
+            created_date: now,
+            updated_date: now,
+          });
+          return result.lastInsertRowId;
+        });
+
+        if (q.options) {
+          // await useModel(responseOptionModel, async (model) => {
+          //     const opts = q.options ?? [];
+          //     for (const opt of opts) {
+          //         await model.insert({
+          //             code: `RESP_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          //             question_id: questionId,
+          //             text: opt.trim(),
+          //             status: 'active' as any,
+          //             created_date: now,
+          //             updated_date: now,
+          //         });
+          //     }
+          // });
+          await useModel(responseOptionModel, async (model) => {
+            // Soft delete existing options
+            await model.updateByFields(
+              { status: "inactive" as any, updated_date: now },
+              { question_id: q.id }
+            );
+            const opts = q.options ?? [];
+            // Insert new options
+            for (const opt of opts) {
+              await model.insert({
+                question_id: q.id,
+                text: opt.trim(),
+                status: "active" as any,
+                created_date: now,
+                updated_date: now,
+              });
+            }
+          });
+        }
+      }
+    }
+  }
+
+  logger.debug("editCustomGoal completed", { trackItemId });
+};
+
+export const removeCustomGoal = async (
+  trackItemId: number,
+  patientId: number
+): Promise<void> => {
+  logger.debug("removeCustomGoal called", { trackItemId, patientId });
+
+  // Deactivate the track item itself
+  await useModel(trackItemModel, async (model) => {
+    await model.updateByFields(
+      { status: "inactive" as any, updated_date: now },
+      { id: trackItemId }
+    );
+  });
+
+  // Deactivate linked entries for this patient
+  await useModel(trackItemEntryModel, async (model) => {
+    await model.updateByFields(
+      { selected: 0 as any, updated_date: now },
+      { track_item_id: trackItemId, patient_id: patientId }
+    );
+  });
+
+  logger.debug("removeCustomGoal completed", { trackItemId, patientId });
 };

@@ -141,7 +141,7 @@ export default function AddItem() {
           </TouchableOpacity>
         }
       />
-      <ScrollView contentContainerClassName="px-4 pb-12 pt-5">
+      <ScrollView contentContainerClassName="px-4 pb-40 pt-5">
         {selectableCategories.map((categoryGroup, categoryIndex) => (
           <View key={categoryGroup.category.id} className="mb-6">
             <Text
@@ -186,13 +186,32 @@ export default function AddItem() {
           </View>
         ))}
       </ScrollView>
-      <View className="bg-white absolute bottom-0 left-0 right-0 px-4 py-4  border-t border-gray-200">
-        <TouchableOpacity
-          onPress={() => router.push(ROUTES.TRACK_CUSTOM_GOALS)}
-          className="flex-row items-center justify-center border border-dashed border-gray-400 rounded-xl py-3 px-4 mb-3"
-        >
-          <Text className="text-cyan-600 font-semibold">+ Add Custom Goal</Text>
-        </TouchableOpacity>
+      <View className="bg-white absolute bottom-0 left-0 right-0 px-4 py-4 border-t border-gray-200">
+        {selectableCategories.some(
+          (categoryGroup) =>
+            categoryGroup.category.name === "Custom" &&
+            categoryGroup.items.length > 0
+        ) ? (
+          // If there is at least 1 custom goal → show Manage button
+          <TouchableOpacity
+            onPress={() => router.push("/home/track/manageCustomGoals")}
+            className="flex-row items-center justify-center border border-dashed border-gray-400 rounded-xl py-3 px-4 mb-3"
+          >
+            <Text className="text-cyan-600 font-semibold">
+              Manage Custom Goals
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          // Otherwise → default Add button
+          <TouchableOpacity
+            onPress={() => router.push(ROUTES.TRACK_CUSTOM_GOALS)}
+            className="flex-row items-center justify-center border border-dashed border-gray-400 rounded-xl py-3 px-4 mb-3"
+          >
+            <Text className="text-cyan-600 font-semibold">
+              + Add Custom Goal
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <CustomButton onPress={handleSave} disabled={isLoading} title="Save" />
       </View>

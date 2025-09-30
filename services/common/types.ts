@@ -1,4 +1,10 @@
-import { Question, ResponseOption, TrackCategory, TrackItem, TrackResponse } from "@/services/database/migrations/v1/schema_v1";
+import {
+  Question,
+  ResponseOption,
+  TrackCategory,
+  TrackItem,
+  TrackResponse,
+} from "@/services/database/migrations/v1/schema_v1";
 
 export type AuthTokens = {
   access_token?: string;
@@ -8,23 +14,23 @@ export type AuthTokens = {
 };
 
 export type GoogleConfig = {
-  REDIRECT_URI: string,
+  REDIRECT_URI: string;
   GOOGLE_IOS_CLIENT_ID: string;
   GOOGLE_ANDROID_CLIENT_ID: string;
-}
+};
 
-export type AlertType = 'i' | 'e' | 'w';
+export type AlertType = "i" | "e" | "w";
 
 export const alertTitleMap: Record<AlertType, string> = {
-  i: 'Info',
-  e: 'Error',
-  w: 'Warning',
+  i: "Info",
+  e: "Error",
+  w: "Warning",
 };
 
 // Track module types
 export interface TrackCategoryWithItems extends TrackCategory {
   items: TrackItemWithProgress[];
-};
+}
 
 export interface TrackItemWithProgress {
   item: TrackItem;
@@ -32,7 +38,7 @@ export interface TrackItemWithProgress {
   completed: number;
   total: number;
   summaries?: string[]; // item-level summaries
-};
+}
 
 export interface TrackItemSelectable {
   item: TrackItem;
@@ -62,5 +68,7 @@ export interface CustomGoalParams {
   userId: string;
   patientId: number;
   date: string;
+  frequency: "daily" | "weekly" | "monthly";
+  code: string;
   questions: CustomGoalQuestion[];
 }
