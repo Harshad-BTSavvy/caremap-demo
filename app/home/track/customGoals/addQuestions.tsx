@@ -9,10 +9,11 @@ import { ScrollView, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function AddQuestionScreen() {
   const router = useRouter();
-  const { goalName, existing, editIndex } = useLocalSearchParams<{
+  const { goalName, existing, editIndex, frequency } = useLocalSearchParams<{
     goalName?: string;
     existing?: string;
     editIndex?: string;
+    frequency?: string;
   }>();
 
   const existingQuestions: Question[] = existing ? JSON.parse(existing) : [];
@@ -30,7 +31,11 @@ export default function AddQuestionScreen() {
 
     router.replace({
       pathname: ROUTES.TRACK_CUSTOM_GOALS,
-      params: { addedQuestions: JSON.stringify(updatedQuestions), goalName },
+      params: {
+        addedQuestions: JSON.stringify(updatedQuestions),
+        goalName,
+        frequency, // ✅ Pass frequency back
+      },
     });
   };
 

@@ -293,6 +293,7 @@ export default function CustomGoals() {
                           params: {
                             existing: JSON.stringify(questions),
                             goalName,
+                            frequency, // ✅ Pass frequency
                             editIndex: index.toString(),
                           },
                         })
@@ -331,10 +332,19 @@ export default function CustomGoals() {
             onPress={() =>
               router.push({
                 pathname: ROUTES.TRACK_CUSTOM_GOALS_ADD_QUESTIONS,
-                params: { existing: JSON.stringify(questions), goalName },
+                params: {
+                  existing: JSON.stringify(questions),
+                  goalName,
+                  frequency, // ✅ Pass frequency
+                },
               })
             }
-            className="flex-row items-center justify-center border border-dashed border-gray-400 rounded-xl py-3 px-4 mb-3"
+            disabled={!goalName.trim() || !frequency}
+            className={`flex-row items-center justify-center border border-dashed rounded-xl py-3 px-4 mb-3 ${
+              !goalName.trim() || !frequency
+                ? "border-gray-300 bg-gray-100"
+                : "border-gray-400"
+            }`}
           >
             <Text className="text-cyan-600 font-semibold">+ Add Question</Text>
           </TouchableOpacity>
