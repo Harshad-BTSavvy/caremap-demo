@@ -801,7 +801,8 @@ export const updateQuestion = async (
   const updateFields: any = { updated_date: now };
   if (updates.text !== undefined) updateFields.text = updates.text;
   if (updates.type !== undefined) updateFields.type = updates.type;
-  if (updates.required !== undefined) updateFields.required = updates.required ? 1 : 0;
+  if (updates.required !== undefined)
+    updateFields.required = updates.required ? 1 : 0;
 
   await useModel(questionModel, async (model) => {
     await model.updateByFields(updateFields, { id: questionId });
@@ -809,10 +810,12 @@ export const updateQuestion = async (
 
   // Update options if provided
   if (updates.options !== undefined) {
-    const questionType = updates.type || (await useModel(questionModel, async (model) => {
-      const question = await model.getFirstByFields({ id: questionId });
-      return question?.type;
-    }));
+    const questionType =
+      updates.type ||
+      (await useModel(questionModel, async (model) => {
+        const question = await model.getFirstByFields({ id: questionId });
+        return question?.type;
+      }));
     await replaceQuestionOptions(questionId, updates.options, questionType);
   }
 
@@ -846,10 +849,14 @@ export const addOptionsToQuestion = async (
   options: string[],
   questionType?: string
 ): Promise<number[]> => {
-  logger.debug("addOptionsToQuestion called", { questionId, options, questionType });
+  logger.debug("addOptionsToQuestion called", {
+    questionId,
+    options,
+    questionType,
+  });
 
   const optionIds: number[] = [];
-  
+
   await useModel(responseOptionModel, async (model) => {
     // Handle boolean questions specially
     if (questionType === QuestionType.BOOLEAN || questionType === "boolean") {
@@ -862,7 +869,7 @@ export const addOptionsToQuestion = async (
         updated_date: now,
       });
       optionIds.push(yesResult.lastInsertRowId);
-      
+
       const noResult = await model.insert({
         question_id: questionId,
         code: `OPTION_${Date.now()}_NO`,
@@ -877,10 +884,12 @@ export const addOptionsToQuestion = async (
       for (let i = 0; i < options.length; i++) {
         const option = options[i];
         if (!option || !option.trim()) continue;
-        
+
         const result = await model.insert({
           question_id: questionId,
-          code: `OPT_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 6)}`,
+          code: `OPT_${Date.now()}_${i}_${Math.random()
+            .toString(36)
+            .slice(2, 6)}`,
           text: option.trim(),
           status: "active" as any,
           created_date: now,
@@ -900,7 +909,11 @@ export const replaceQuestionOptions = async (
   newOptions: string[],
   questionType?: string
 ): Promise<void> => {
-  logger.debug("replaceQuestionOptions called", { questionId, newOptions, questionType });
+  logger.debug("replaceQuestionOptions called", {
+    questionId,
+    newOptions,
+    questionType,
+  });
 
   // Soft delete existing options
   await useModel(responseOptionModel, async (model) => {
@@ -936,7 +949,11 @@ export const editCustomGoalEnhanced = async (
     }[];
   }
 ): Promise<void> => {
-  logger.debug("editCustomGoalEnhanced called", { trackItemId, patientId, updates });
+  logger.debug("editCustomGoalEnhanced called", {
+    trackItemId,
+    patientId,
+    updates,
+  });
 
   // Update name if provided
   if (updates.name) {
@@ -962,8 +979,10 @@ export const editCustomGoalEnhanced = async (
   if (updates.questions) {
     // Get existing questions
     const existingQuestions = await getQuestionsForTrackItem(trackItemId);
-    const existingQuestionIds = new Set(existingQuestions.map(q => q.id));
-    const updatedQuestionIds = new Set(updates.questions.filter(q => q.id).map(q => q.id!));
+    const existingQuestionIds = new Set(existingQuestions.map((q) => q.id));
+    const updatedQuestionIds = new Set(
+      updates.questions.filter((q) => q.id).map((q) => q.id!)
+    );
 
     // Remove questions that are no longer in the update
     for (const existingId of existingQuestionIds) {
@@ -1024,7 +1043,7 @@ export const removeCustomGoal = async (
     const questionsResult = await useModel(questionModel, async (qModel) => {
       return await qModel.getByFields({ item_id: trackItemId });
     });
-    
+
     for (const question of questionsResult) {
       await model.updateByFields(
         { status: "inactive" as any, updated_date: now },

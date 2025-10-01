@@ -37,16 +37,19 @@ export default function AddQuestionForm({ onSave, editing }: Props) {
       alert("Question text cannot be empty");
       return;
     }
-    
+
     // Validate options for mcq/msq
-    if ((type === "mcq" || type === "msq") && options.filter(opt => opt.trim()).length < 2) {
+    if (
+      (type === "mcq" || type === "msq") &&
+      options.filter((opt) => opt.trim()).length < 2
+    ) {
       alert("Multiple choice questions need at least 2 valid options");
       return;
     }
-    
+
     // Clean up options - only keep non-empty ones
-    const cleanedOptions = options.filter(opt => opt.trim().length > 0);
-    
+    const cleanedOptions = options.filter((opt) => opt.trim().length > 0);
+
     onSave({
       id: editing?.id, // pass through existing id so backend updates instead of creating
       text: text.trim(),
@@ -54,7 +57,7 @@ export default function AddQuestionForm({ onSave, editing }: Props) {
       required,
       options: type === "mcq" || type === "msq" ? cleanedOptions : [],
     });
-    
+
     if (!editing) {
       // reset only for new
       setText("");

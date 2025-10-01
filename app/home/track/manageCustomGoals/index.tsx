@@ -113,15 +113,15 @@ export default function ManageCustomGoals() {
 
   const handleDeleteGoal = async () => {
     if (!goalToDelete || !patient?.id) return;
-    
+
     const deletingGoal = goalToDelete;
     const deletingId = deletingGoal.id;
-    
+
     // Optimistic update
     setCustomGoals((prev) => prev.filter((g) => g.id !== deletingId));
     setShowAlertDialog(false);
     setGoalToDelete(null);
-    
+
     try {
       await removeCustomGoal(deletingId, patient.id);
       // Signal other track screens to refresh
@@ -130,7 +130,9 @@ export default function ManageCustomGoals() {
     } catch (error) {
       console.error("Failed to delete custom goal:", error);
       // Rollback on failure - restore the deleted goal
-      setCustomGoals((prev) => [deletingGoal, ...prev].sort((a, b) => a.id - b.id));
+      setCustomGoals((prev) =>
+        [deletingGoal, ...prev].sort((a, b) => a.id - b.id)
+      );
       // Show error message (you could add a toast here if available)
       alert(`Failed to delete "${deletingGoal.name}". Please try again.`);
     }
