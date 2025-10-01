@@ -26,6 +26,7 @@ import {
 import { CustomButton } from "@/components/shared/CustomButton";
 import { LabeledTextInput } from "@/components/shared/labeledTextInput";
 import ActionPopover from "@/components/shared/ActionPopover";
+import { CustomAlertDialog } from "@/components/shared/CustomAlertDialog";
 
 export interface QuestionInput {
   id?: number; // optional id so existing questions can be updated instead of recreated
@@ -47,6 +48,14 @@ export default function CustomGoals() {
   const [frequency, setFrequency] = useState<
     "daily" | "weekly" | "monthly" | null
   >(null);
+
+  // Question deletion confirmation states
+  const [questionToDelete, setQuestionToDelete] = useState<{
+    index: number;
+    question: QuestionInput;
+  } | null>(null);
+  const [showQuestionDeleteDialog, setShowQuestionDeleteDialog] =
+    useState(false);
 
   // Router params
   const {
@@ -113,13 +122,21 @@ export default function CustomGoals() {
   }, [passedGoalName, passedFrequency, passedQuestions]);
 
   const handleDelete = async (index: number) => {
-    const questionToDelete = questions[index];
+    const questionToDeleteData = questions[index];
+    setQuestionToDelete({ index, question: questionToDeleteData });
+    setShowQuestionDeleteDialog(true);
+  };
+
+  const confirmQuestionDelete = () => {
+    if (questionToDelete === null) return;
+
+    const { index, question } = questionToDelete;
 
     // Always just remove from local state - don't auto-delete the goal
     // Goal deletion will be handled in save if no questions remain
     setQuestions((prev) => prev.filter((_, i) => i !== index));
 
-    if (goalId && questionToDelete.id) {
+    if (goalId && question.id) {
       showToast({
         title: "Deleted",
         description: "Question will be removed when you save.",
@@ -127,6 +144,10 @@ export default function CustomGoals() {
     } else {
       showToast({ title: "Deleted", description: "Question removed." });
     }
+
+    // Reset deletion state
+    setQuestionToDelete(null);
+    setShowQuestionDeleteDialog(false);
   };
 
   const handleSaveGoal = async () => {
@@ -428,6 +449,22 @@ export default function CustomGoals() {
           />
         </View>
       </KeyboardAvoidingView>
+
+      {/* Question deletion confirmation dialog */}
+      <CustomAlertDialog
+        isOpen={showQuestionDeleteDialog}
+        onClose={() => {
+          setShowQuestionDeleteDialog(false);
+          setQuestionToDelete(null);
+        }}
+        title="Delete Question"
+        description={
+          questionToDelete
+            ? `Are you sure you want to delete this question: "${questionToDelete.question.text}"?`
+            : "Are you sure you want to delete this question?"
+        }
+        onConfirm={confirmQuestionDelete}
+      />
     </SafeAreaView>
   );
 }

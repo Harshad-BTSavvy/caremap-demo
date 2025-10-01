@@ -141,7 +141,7 @@ export default function ManageCustomGoals() {
   return (
     <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
       <Header
-        title="Add Custom Goal"
+        title="Manage Custom Goals"
         right={
           <TouchableOpacity onPress={() => router.back()}>
             <Text className="text-white font-medium">Cancel</Text>
@@ -213,7 +213,12 @@ export default function ManageCustomGoals() {
       <CustomAlertDialog
         isOpen={showAlertDialog}
         onClose={() => setShowAlertDialog(false)}
-        description={goalToDelete?.name ?? ""}
+        title="Delete Custom Goal"
+        description={
+          goalToDelete
+            ? `Are you sure you want to delete the custom goal "${goalToDelete.name}"? This action cannot be undone.`
+            : "Are you sure you want to delete this custom goal?"
+        }
         onConfirm={handleDeleteGoal}
       />
     </SafeAreaView>
