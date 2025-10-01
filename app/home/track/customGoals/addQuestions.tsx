@@ -9,12 +9,14 @@ import { ScrollView, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function AddQuestionScreen() {
   const router = useRouter();
-  const { goalName, existing, editIndex, frequency } = useLocalSearchParams<{
-    goalName?: string;
-    existing?: string;
-    editIndex?: string;
-    frequency?: string;
-  }>();
+  const { goalName, goalId, existing, editIndex, frequency } =
+    useLocalSearchParams<{
+      goalName?: string;
+      goalId?: string; // preserve goal id for editing flow
+      existing?: string;
+      editIndex?: string;
+      frequency?: string;
+    }>();
 
   const existingQuestions: Question[] = existing ? JSON.parse(existing) : [];
 
@@ -34,6 +36,7 @@ export default function AddQuestionScreen() {
       params: {
         addedQuestions: JSON.stringify(updatedQuestions),
         goalName,
+        goalId, // return goal id so main screen knows it's editing
         frequency, // ✅ Pass frequency back
       },
     });

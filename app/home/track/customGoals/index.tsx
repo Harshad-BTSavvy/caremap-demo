@@ -28,6 +28,7 @@ import { LabeledTextInput } from "@/components/shared/labeledTextInput";
 import ActionPopover from "@/components/shared/ActionPopover";
 
 export interface QuestionInput {
+  id?: number; // optional id so existing questions can be updated instead of recreated
   text: string;
   type: string;
   required: boolean;
@@ -112,27 +113,37 @@ export default function CustomGoals() {
   }, [passedGoalName, passedFrequency, passedQuestions]);
 
   const handleDelete = async (index: number) => {
-    if (goalId && questions.length === 1) {
-      // deleting the last question -> remove whole goal
-      try {
-        await removeCustomGoal(Number(goalId), patient?.id!);
-        showToast({ title: "Deleted", description: "Custom goal deleted." });
-        setRefreshData(true);
-        router.replace(ROUTES.TRACK_ADD_ITEM);
-        return;
-      } catch {
-        showToast({ title: "Error", description: "Failed to delete goal." });
-        return;
-      }
-    }
+    const questionToDelete = questions[index];
 
+    // Always just remove from local state - don't auto-delete the goal
+    // Goal deletion will be handled in save if no questions remain
     setQuestions((prev) => prev.filter((_, i) => i !== index));
-    showToast({ title: "Deleted", description: "Question removed." });
+
+    if (goalId && questionToDelete.id) {
+      showToast({
+        title: "Deleted",
+        description: "Question will be removed when you save.",
+      });
+    } else {
+      showToast({ title: "Deleted", description: "Question removed." });
+    }
   };
 
   const handleSaveGoal = async () => {
-    if (!user?.id) return router.replace(ROUTES.LOGIN);
-    if (!patient?.id) return router.replace(ROUTES.MY_HEALTH);
+    if (!user?.id) {
+      showToast({
+        title: "Authentication Error",
+        description: "Please log in again.",
+      });
+      return router.replace(ROUTES.LOGIN);
+    }
+    if (!patient?.id) {
+      showToast({
+        title: "Patient Error",
+        description: "Please select a patient.",
+      });
+      return router.replace(ROUTES.MY_HEALTH);
+    }
 
     if (!goalName.trim()) {
       return showToast({
@@ -147,10 +158,49 @@ export default function CustomGoals() {
       });
     }
     if (questions.length === 0) {
-      return showToast({
-        title: "Add questions",
-        description: "Please add at least one question.",
-      });
+      if (goalId) {
+        // If editing an existing goal and no questions remain, delete the goal
+        try {
+          await removeCustomGoal(Number(goalId), patient.id);
+          showToast({
+            title: "Deleted",
+            description: "Custom goal deleted (no questions remaining).",
+          });
+          setRefreshData(true);
+          router.replace(ROUTES.TRACK_ADD_ITEM);
+          return;
+        } catch (error) {
+          console.error("Failed to delete goal:", error);
+          showToast({ title: "Error", description: "Failed to delete goal." });
+          return;
+        }
+      } else {
+        // For new goals, just show validation error
+        return showToast({
+          title: "Add questions",
+          description: "Please add at least one question.",
+        });
+      }
+    }
+
+    // Validate questions
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.text.trim()) {
+        return showToast({
+          title: "Invalid question",
+          description: `Question ${i + 1} cannot be empty.`,
+        });
+      }
+      if (
+        (q.type === "mcq" || q.type === "msq") &&
+        (!q.options || q.options.filter((opt) => opt.trim()).length < 2)
+      ) {
+        return showToast({
+          title: "Invalid options",
+          description: `Question ${i + 1} needs at least 2 valid options.`,
+        });
+      }
     }
 
     try {
@@ -158,31 +208,51 @@ export default function CustomGoals() {
         await editCustomGoal(Number(goalId), patient.id, {
           name: goalName.trim(),
           frequency,
-          questions,
+          questions: questions.map((q) => ({
+            id: q.id, // Keep existing ID for updates
+            text: q.text.trim(),
+            type: q.type,
+            required: q.required,
+            options: q.options?.filter((opt) => opt.trim()) || [],
+          })),
         });
         showToast({ title: "Success", description: "Custom goal updated!" });
       } else {
-        await addCustomGoal({
+        const trackItemId = await addCustomGoal({
           name: goalName.trim(),
           userId: user.id,
           code: `CUSTOM_${Date.now()}`,
           patientId: patient.id,
           date: selectedDate,
           frequency,
-          questions,
+          questions: questions.map((q) => ({
+            text: q.text.trim(),
+            type: q.type,
+            required: q.required,
+            options: q.options?.filter((opt) => opt.trim()) || [],
+          })),
         });
+        console.log("Created custom goal with ID:", trackItemId);
         showToast({ title: "Success", description: "Custom goal saved!" });
       }
 
       setRefreshData(true);
       router.replace(ROUTES.TRACK_ADD_ITEM);
     } catch (err) {
-      console.error(err);
-      showToast({ title: "Error", description: "Failed to save goal." });
+      console.error("Failed to save custom goal:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to save goal.";
+      showToast({
+        title: "Error",
+        description: goalId
+          ? `Failed to update goal: ${errorMessage}`
+          : `Failed to create goal: ${errorMessage}`,
+      });
     }
   };
 
-  const isDisabled = !goalName.trim() || !frequency || questions.length === 0;
+  const isDisabled =
+    !goalName.trim() || !frequency || (!goalId && questions.length === 0);
 
   return (
     <SafeAreaView edges={["right", "top", "left"]} className="flex-1 bg-white">
@@ -293,6 +363,7 @@ export default function CustomGoals() {
                           params: {
                             existing: JSON.stringify(questions),
                             goalName,
+                            goalId, // keep reference to existing goal
                             frequency, // ✅ Pass frequency
                             editIndex: index.toString(),
                           },
@@ -335,6 +406,7 @@ export default function CustomGoals() {
                 params: {
                   existing: JSON.stringify(questions),
                   goalName,
+                  goalId, // keep goal id when editing existing goal
                   frequency, // ✅ Pass frequency
                 },
               })

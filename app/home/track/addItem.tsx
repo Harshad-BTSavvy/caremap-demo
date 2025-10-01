@@ -19,7 +19,14 @@ import {
 import { ROUTES } from "@/utils/route";
 import palette from "@/utils/theme/color";
 import { usePathname, useRouter } from "expo-router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -39,6 +46,19 @@ export default function AddItem() {
   const initialCategoriesRef = useRef<TrackCategoryWithSelectableItems[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const loadSelectableItems = useCallback(async () => {
+    if (!user || !patient) return;
+    const res = await getAllCategoriesWithSelectableItems(
+      patient.id,
+      selectedDate
+    );
+    selectableCategoriesRef.current = res;
+    initialCategoriesRef.current = res;
+    setSelectableCategories(res);
+    if (refreshData) setRefreshData(false);
+  }, [user, patient, selectedDate, refreshData, setRefreshData]);
+
+  // Initial load & refresh trigger
   useEffect(() => {
     if (!user) {
       router.replace(ROUTES.LOGIN);
@@ -48,20 +68,15 @@ export default function AddItem() {
       router.replace(ROUTES.MY_HEALTH);
       return;
     }
-
-    const loadSelectableItems = async () => {
-      const res = await getAllCategoriesWithSelectableItems(
-        patient.id,
-        selectedDate
-      );
-
-      selectableCategoriesRef.current = res;
-      initialCategoriesRef.current = res;
-      setSelectableCategories(res);
-      if (refreshData) setRefreshData(false);
-    };
     loadSelectableItems();
-  }, [user, patient, selectedDate, refreshData]);
+  }, [user, patient, selectedDate, refreshData, loadSelectableItems]);
+
+  // Ensure list refreshes when returning from manage custom goals screen
+  useFocusEffect(
+    useCallback(() => {
+      loadSelectableItems();
+    }, [loadSelectableItems])
+  );
 
   const toggleSelect = (categoryIndex: number, itemIndex: number) => {
     setSelectableCategories((prev) => {

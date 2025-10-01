@@ -15,8 +15,10 @@ import ActionPopover from "@/components/shared/ActionPopover";
 import {
   getAllCategoriesWithSelectableItems,
   removeCustomGoal,
+  getQuestionsForTrackItem,
 } from "@/services/core/TrackService";
 import { PatientContext } from "@/context/PatientContext";
+import { TrackContext } from "@/context/TrackContext";
 import { CustomAlertDialog } from "@/components/shared/CustomAlertDialog";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/shared/Header";
@@ -34,6 +36,7 @@ interface CustomGoal {
 export default function ManageCustomGoals() {
   const router = useRouter();
   const { patient } = useContext(PatientContext);
+  const { setRefreshData } = useContext(TrackContext);
 
   const [customGoals, setCustomGoals] = useState<CustomGoal[]>([]);
   const [goalToDelete, setGoalToDelete] = useState<CustomGoal | null>(null);
@@ -42,23 +45,30 @@ export default function ManageCustomGoals() {
   const fetchCustomGoals = async () => {
     if (!patient?.id) return;
 
-    const res = await getAllCategoriesWithSelectableItems(
-      patient.id,
-      new Date().toISOString()
-    );
-
-    const customCategory = res.find((cat) => cat.category.name === "Custom");
-
-    if (customCategory) {
-      setCustomGoals(
-        customCategory.items.map((it) => ({
-          id: it.item.id,
-          name: it.item.name,
-          created_date: new Date(it.item.created_date).toISOString(), // ✅ always string
-          frequency: it.item.frequency, // ✅ Add frequency mapping
-        }))
+    try {
+      const res = await getAllCategoriesWithSelectableItems(
+        patient.id,
+        new Date().toISOString()
       );
-    } else {
+
+      const customCategory = res.find((cat) => cat.category.name === "Custom");
+
+      if (customCategory) {
+        setCustomGoals(
+          customCategory.items
+            .filter((it) => it.item.status === "active") // Only show active items
+            .map((it) => ({
+              id: it.item.id,
+              name: it.item.name,
+              created_date: new Date(it.item.created_date).toISOString(),
+              frequency: it.item.frequency,
+            }))
+        );
+      } else {
+        setCustomGoals([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch custom goals:", error);
       setCustomGoals([]);
     }
   };
@@ -67,24 +77,63 @@ export default function ManageCustomGoals() {
     fetchCustomGoals();
   }, [patient?.id]);
 
-  const handleEditGoal = (goal: CustomGoal) => {
-    router.push({
-      pathname: "/home/track/customGoals",
-      params: {
-        goalId: goal.id.toString(),
-        goalName: goal.name,
-        frequency: goal.frequency,
-        questions: JSON.stringify(goal.questions ?? []),
-      },
-    });
+  const handleEditGoal = async (goal: CustomGoal) => {
+    try {
+      // Fetch latest questions (with options) so edit screen pre-populates reliably
+      const q = await getQuestionsForTrackItem(goal.id);
+      router.push({
+        pathname: "/home/track/customGoals",
+        params: {
+          goalId: goal.id.toString(),
+          goalName: goal.name,
+          frequency: goal.frequency,
+          questions: JSON.stringify(
+            q.map((qu) => ({
+              id: qu.id,
+              text: qu.text,
+              type: qu.type,
+              required: qu.required,
+              options: qu.options || [],
+            }))
+          ),
+        },
+      });
+    } catch (e) {
+      console.warn("Failed to load questions for goal", goal.id, e);
+      router.push({
+        pathname: "/home/track/customGoals",
+        params: {
+          goalId: goal.id.toString(),
+          goalName: goal.name,
+          frequency: goal.frequency,
+        },
+      });
+    }
   };
 
   const handleDeleteGoal = async () => {
     if (!goalToDelete || !patient?.id) return;
-    await removeCustomGoal(goalToDelete.id, patient.id);
-    await fetchCustomGoals();
+    
+    const deletingGoal = goalToDelete;
+    const deletingId = deletingGoal.id;
+    
+    // Optimistic update
+    setCustomGoals((prev) => prev.filter((g) => g.id !== deletingId));
     setShowAlertDialog(false);
     setGoalToDelete(null);
+    
+    try {
+      await removeCustomGoal(deletingId, patient.id);
+      // Signal other track screens to refresh
+      setRefreshData(true);
+      console.log(`Successfully deleted custom goal: ${deletingGoal.name}`);
+    } catch (error) {
+      console.error("Failed to delete custom goal:", error);
+      // Rollback on failure - restore the deleted goal
+      setCustomGoals((prev) => [deletingGoal, ...prev].sort((a, b) => a.id - b.id));
+      // Show error message (you could add a toast here if available)
+      alert(`Failed to delete "${deletingGoal.name}". Please try again.`);
+    }
   };
 
   return (

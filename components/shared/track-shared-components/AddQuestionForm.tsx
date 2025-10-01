@@ -6,6 +6,7 @@ import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 
 export interface Question {
+  id?: number; // preserve existing question id when editing
   text: string;
   type: string;
   required: boolean;
@@ -32,13 +33,28 @@ export default function AddQuestionForm({ onSave, editing }: Props) {
   ];
 
   const handleSave = () => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      alert("Question text cannot be empty");
+      return;
+    }
+    
+    // Validate options for mcq/msq
+    if ((type === "mcq" || type === "msq") && options.filter(opt => opt.trim()).length < 2) {
+      alert("Multiple choice questions need at least 2 valid options");
+      return;
+    }
+    
+    // Clean up options - only keep non-empty ones
+    const cleanedOptions = options.filter(opt => opt.trim().length > 0);
+    
     onSave({
-      text,
+      id: editing?.id, // pass through existing id so backend updates instead of creating
+      text: text.trim(),
       type,
       required,
-      options: type === "mcq" || type === "msq" ? options : [],
+      options: type === "mcq" || type === "msq" ? cleanedOptions : [],
     });
+    
     if (!editing) {
       // reset only for new
       setText("");
@@ -143,16 +159,30 @@ export default function AddQuestionForm({ onSave, editing }: Props) {
             Type Your Options..
           </Text>
           {options.map((opt, i) => (
-            <LabeledTextInput
-              key={i}
-              label={`Option ${i + 1}`}
-              value={opt}
-              onChangeText={(t) => {
-                const updated = [...options];
-                updated[i] = t;
-                setOptions(updated);
-              }}
-            />
+            <View key={i} className="flex-row items-center mb-2">
+              <View className="flex-1">
+                <LabeledTextInput
+                  label={`Option ${i + 1}`}
+                  value={opt}
+                  onChangeText={(t) => {
+                    const updated = [...options];
+                    updated[i] = t;
+                    setOptions(updated);
+                  }}
+                />
+              </View>
+              {options.length > 1 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    const updated = options.filter((_, idx) => idx !== i);
+                    setOptions(updated);
+                  }}
+                  className="ml-2 p-2 bg-red-100 rounded-lg"
+                >
+                  <Text className="text-red-600 font-semibold text-xs">✕</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           ))}
           <TouchableOpacity
             onPress={() => setOptions([...options, ""])}
